@@ -1,2 +1,3 @@
+include ':ConnectorLib'
 include ':app'
-rootProject.name='ServerApp'
+rootProject.name = 'ServerApp'
