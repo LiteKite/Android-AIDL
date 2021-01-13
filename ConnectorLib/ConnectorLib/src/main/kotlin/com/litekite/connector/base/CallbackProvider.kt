@@ -14,30 +14,24 @@
  * limitations under the License.
  */
 
-package com.litekite.client
-
-import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
-import com.litekite.connector.BankConnectorClient
+package com.litekite.connector.base
 
 /**
  * @author Vignesh S
- * @version 1.0, 05/01/2020
+ * @version 1.0, 31/08/2020
  * @since 1.0
  */
-class MainActivity : AppCompatActivity() {
+@Suppress("UNUSED")
+interface CallbackProvider<T> {
 
-	companion object {
-		val TAG: String = MainActivity::class.java.simpleName
+	val callbacks: ArrayList<T>
+
+	fun addCallback(cb: T) {
+		callbacks.add(cb)
 	}
 
-	private var connectorClient: BankConnectorClient? = null
-
-	override fun onCreate(savedInstanceState: Bundle?) {
-		super.onCreate(savedInstanceState)
-		setContentView(R.layout.activity_main)
-
-		connectorClient = BankConnectorClient(this)
+	fun removeCallback(cb: T) {
+		callbacks.remove(cb)
 	}
 
 }

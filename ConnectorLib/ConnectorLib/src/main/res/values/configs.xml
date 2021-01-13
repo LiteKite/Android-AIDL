@@ -14,9 +14,10 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 -->
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.litekite.connector">
+<resources>
 
-    <uses-permission android:name="com.litekite.server.permission.BIND_BANK_SERVICE" />
+    <!--Bank service component-->
+    <string name="action_bank_service">com.litekite.server.intent.action.BIND_BANK_SERVICE</string>
+    <string name="component_bank_service">com.litekite.server/.service.BankService</string>
 
-</manifest>
+</resources>

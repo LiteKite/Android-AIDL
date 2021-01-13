@@ -14,15 +14,17 @@
  * limitations under the License.
  */
 
-package com.litekite.server
+package com.litekite.server.service
 
 import android.app.Service
 import android.content.Intent
 import android.os.Binder
 import android.os.IBinder
 import android.os.RemoteCallbackList
+import android.util.Log
 import com.litekite.connector.IBankService
 import com.litekite.connector.IBankServiceCallback
+import com.litekite.server.R
 
 /**
  * @author Vignesh S
@@ -30,6 +32,10 @@ import com.litekite.connector.IBankServiceCallback
  * @since 1.0
  */
 class BankService : Service() {
+
+	companion object {
+		val TAG: String = BankService::class.java.simpleName
+	}
 
 	/**
 	 * This is a list of callbacks that have been registered with the service.
@@ -62,6 +68,7 @@ class BankService : Service() {
 
 	override fun onCreate() {
 		super.onCreate()
+		Log.d(TAG, "onCreate")
 	}
 
 	override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -72,18 +79,25 @@ class BankService : Service() {
 		if (intent == null) {
 			return null
 		}
-		if (IBankService::class.java.name == intent.action) {
+		if (getString(R.string.action_bank_service) == intent.action) {
 			return binder
-		} else if (BankService::class.java.name == intent.action) {
+		} else if (getString(R.string.action_bank_service_local_bind) == intent.action) {
 			return LocalBinder()
 		}
 		return null
 	}
 
-	override fun onTaskRemoved(rootIntent: Intent?) {
-		super.onTaskRemoved(rootIntent)
+	override fun onDestroy() {
+		super.onDestroy()
+		bankServiceCallbacks.kill()
 	}
 
+	override fun onLowMemory() {
+		super.onLowMemory()
+		Log.d(TAG, "onLowMemory")
+	}
+
+	@Suppress("UNUSED")
 	inner class LocalBinder : Binder() {
 		val service = this@BankService
 	}
