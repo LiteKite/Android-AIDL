@@ -14,23 +14,16 @@
  * limitations under the License.
  */
 
-package com.litekite.server
+// SignupRequest.aidl
+package com.litekite.connector.entity;
 
-import org.junit.Assert.assertEquals
-import org.junit.Test
+// Declare any non-default types here with import statements
 
 /**
- * Example local unit test, which will execute on the development machine (host).
- *
- * See [testing documentation](http://d.android.com/tools/testing).
+ * An aidl of LoginRequest parcelable declaration
  *
  * @author Vignesh S
- * @version 1.0, 22/01/2020
+ * @version 1.0, 17/01/2021
  * @since 1.0
  */
-class ExampleUnitTest {
-	@Test
-	fun addition_isCorrect() {
-		assertEquals(4, 2 + 2)
-	}
-}
+parcelable LoginRequest;

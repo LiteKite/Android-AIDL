@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 LiteKite Startup. All rights reserved.
+ * Copyright 2021 LiteKite Startup. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,17 +15,19 @@
  */
 
 // IBankService.aidl
-package com.litekite.connector;
+package com.litekite.connector.controller;
 
 // Declare any non-default types here with import statements
-import com.litekite.connector.IBankServiceCallback;
+import com.litekite.connector.controller.IBankServiceCallback;
+import com.litekite.connector.entity.LoginRequest;
+import com.litekite.connector.entity.SignupRequest;
 
 /**
  * Example of defining an interface for calling on to a remote service
  * (running in another process).
  *
  * @author Vignesh S
- * @version 1.0, 11/01/2020
+ * @version 1.0, 11/01/2021
  * @since 1.0
  */
 interface IBankService {
@@ -45,11 +47,11 @@ interface IBankService {
     /**
      * Called upon the signup request process.
      */
-    void signupRequest(String username, String password);
+    void signupRequest(in SignupRequest signupRequest);
 
     /**
      * Called upon the signup request process.
      */
-    void loginRequest(String username, String password);
+    void loginRequest(in LoginRequest loginRequest);
 
 }

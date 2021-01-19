@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 LiteKite Startup. All rights reserved.
+ * Copyright 2021 LiteKite Startup. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.litekite.connector
+package com.litekite.connector.controller
 
 import android.content.ComponentName
 import android.content.Context
@@ -23,31 +23,33 @@ import android.content.ServiceConnection
 import android.os.IBinder
 import android.os.RemoteException
 import android.util.Log
-import com.litekite.connector.base.CallbackProvider
+import com.litekite.connector.R
+import com.litekite.connector.entity.LoginRequest
+import com.litekite.connector.entity.SignupRequest
 
 /**
  * @author Vignesh S
- * @version 1.0, 12/01/2020
+ * @version 1.0, 12/01/2021
  * @since 1.0
  */
 @Suppress("UNUSED")
-class BankConnectorClient(private val context: Context) :
-	CallbackProvider<BankConnectorClient.Callback> {
+class BankServiceConnector private constructor(private val context: Context) {
 
 	companion object {
-		val TAG: String = BankConnectorClient::class.java.simpleName
+		val TAG: String = BankServiceConnector::class.java.simpleName
 	}
 
-	private var isServiceConnected = false
+	private var serviceConnected = false
 	private var bankService: IBankService? = null
+	var callback: Callback? = null
 
 	private val serviceConnection = object : ServiceConnection {
 
 		override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
 			Log.d(TAG, "onServiceConnected")
-			isServiceConnected = true
+			serviceConnected = true
+			bankService = IBankService.Stub.asInterface(service)
 			try {
-				bankService = IBankService.Stub.asInterface(service)
 				bankService?.registerCallback(bankServiceCallback)
 			} catch (e: RemoteException) {
 				e.printStackTrace()
@@ -56,7 +58,7 @@ class BankConnectorClient(private val context: Context) :
 
 		override fun onServiceDisconnected(name: ComponentName?) {
 			Log.d(TAG, "onServiceDisconnected")
-			isServiceConnected = false
+			serviceConnected = false
 			bankService = null
 		}
 
@@ -65,22 +67,20 @@ class BankConnectorClient(private val context: Context) :
 	private val bankServiceCallback = object : IBankServiceCallback.Stub() {
 
 		override fun onSignupResponse(responseState: Int, userId: Int, username: String?) {
-			TODO("Not yet implemented")
+			callback?.onSignupResponse()
 		}
 
 		override fun onLoginResponse(responseState: Int, userId: Int, username: String?) {
-			TODO("Not yet implemented")
+			callback?.onLoginResponse()
 		}
 
 	}
 
-	override val callbacks: ArrayList<Callback> = ArrayList()
-
-	init {
-		connectService()
-	}
-
-	private fun connectService() {
+	fun connectService() {
+		if (serviceConnected) {
+			Log.d(TAG, "connectService: service was already connected. Ignoring...")
+			return
+		}
 		val intent = Intent()
 		intent.component = ComponentName.unflattenFromString(
 			context.getString(R.string.component_bank_service)
@@ -89,7 +89,35 @@ class BankConnectorClient(private val context: Context) :
 		context.bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE)
 	}
 
-	private fun disconnectService() {
+	fun signupRequest(signupRequest: SignupRequest) {
+		if (!serviceConnected) {
+			Log.d(TAG, "signupRequest: service was not connected. Ignoring...")
+			return
+		}
+		try {
+			bankService?.signupRequest(signupRequest)
+		} catch (e: RemoteException) {
+			e.printStackTrace()
+		}
+	}
+
+	fun loginRequest(loginRequest: LoginRequest) {
+		if (!serviceConnected) {
+			Log.d(TAG, "loginRequest: service was not connected. Ignoring...")
+			return
+		}
+		try {
+			bankService?.loginRequest(loginRequest)
+		} catch (e: RemoteException) {
+			e.printStackTrace()
+		}
+	}
+
+	fun disconnectService() {
+		if (!serviceConnected) {
+			Log.d(TAG, "disconnectService: service was not connected. Ignoring...")
+			return
+		}
 		try {
 			bankService?.unregisterCallback(bankServiceCallback)
 		} catch (e: RemoteException) {
@@ -98,11 +126,26 @@ class BankConnectorClient(private val context: Context) :
 		context.unbindService(serviceConnection)
 	}
 
+	class Builder(context: Context) {
+
+		private val connectorClient = BankServiceConnector(context)
+
+		fun setCallback(cb: Callback): Builder {
+			connectorClient.callback = cb
+			return this@Builder
+		}
+
+		fun build(): BankServiceConnector {
+			return connectorClient
+		}
+
+	}
+
 	interface Callback {
 
-		fun onSignupResponse()
+		fun onSignupResponse() {}
 
-		fun onLoginResponse()
+		fun onLoginResponse() {}
 
 	}
 

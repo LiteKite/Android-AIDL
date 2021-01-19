@@ -14,9 +14,22 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 -->
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.litekite.connector">
+<resources>
 
-    <uses-permission android:name="com.litekite.server.permission.BIND_BANK_SERVICE" />
+    <!--Toolbar-->
+    <dimen name="tool_bar_back_button_width">24dp</dimen>
+    <dimen name="tool_bar_back_button_height">24dp</dimen>
 
-</manifest>
+    <!--Login-->
+    <dimen name="layout_login_margin">30dp</dimen>
+
+    <dimen name="edit_text_username_height">64dp</dimen>
+
+    <dimen name="edit_text_password_height">64dp</dimen>
+    <dimen name="edit_text_password_margin_top">20dp</dimen>
+
+    <dimen name="button_login_height">64dp</dimen>
+    <dimen name="button_login__margin_top">20dp</dimen>
+    <dimen name="button_login_text_size">18sp</dimen>
+
+</resources>

@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 LiteKite Startup. All rights reserved.
+ * Copyright 2021 LiteKite Startup. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
  */
 
 // IBankServiceCallback.aidl
-package com.litekite.connector;
+package com.litekite.connector.controller;
 
 // Declare any non-default types here with import statements
 
@@ -25,7 +25,7 @@ package com.litekite.connector;
  * one-way interface so the server does not block waiting for the client.
  *
  * @author Vignesh S
- * @version 1.0, 11/01/2020
+ * @version 1.0, 11/01/2021
  * @since 1.0
  */
 interface IBankServiceCallback {
@@ -33,11 +33,11 @@ interface IBankServiceCallback {
     /**
      * Called upon the signup request process.
      */
-    oneway void onSignupResponse(int responseState, int userId, String username);
+    void onSignupResponse(int responseState, int userId, String username);
 
     /**
      * Called upon the login request process.
      */
-    oneway void onLoginResponse(int responseState, int userId, String username);
+    void onLoginResponse(int responseState, int userId, String username);
 
 }

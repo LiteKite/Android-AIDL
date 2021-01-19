@@ -1,0 +1,64 @@
+/*
+ * Copyright 2021 LiteKite Startup. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.litekite.connector.controller
+
+import android.content.Context
+import com.litekite.client.base.CallbackProvider
+import com.litekite.connector.entity.LoginRequest
+import com.litekite.connector.entity.SignupRequest
+
+/**
+ * @author Vignesh S
+ * @version 1.0, 17/01/2021
+ * @since 1.0
+ */
+class BankServiceController(context: Context) : BankServiceConnector.Callback,
+	CallbackProvider<BankServiceConnector.Callback> {
+
+	companion object {
+		val TAG: String = BankServiceController::class.java.simpleName
+	}
+
+	private val serviceProvider = BankServiceConnector.Builder(context)
+		.setCallback(this)
+		.build()
+
+	override val callbacks: ArrayList<BankServiceConnector.Callback> = ArrayList()
+
+	fun connect() = serviceProvider.connectService()
+
+	fun disconnect() = serviceProvider.disconnectService()
+
+	fun signup(username: String, password: String) {
+		val signupRequest = SignupRequest(username, password)
+		serviceProvider.signupRequest(signupRequest)
+	}
+
+	fun login(username: String, password: String) {
+		val loginRequest = LoginRequest(username, password)
+		serviceProvider.loginRequest(loginRequest)
+	}
+
+	override fun onSignupResponse() {
+
+	}
+
+	override fun onLoginResponse() {
+
+	}
+
+}

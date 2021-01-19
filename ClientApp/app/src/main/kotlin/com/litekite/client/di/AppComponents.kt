@@ -14,23 +14,29 @@
  * limitations under the License.
  */
 
-package com.litekite.server
+package com.litekite.client.di
 
-import org.junit.Assert.assertEquals
-import org.junit.Test
+import android.content.Context
+import com.litekite.connector.controller.BankServiceController
+import dagger.Module
+import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.android.components.ApplicationComponent
+import dagger.hilt.android.qualifiers.ApplicationContext
+import javax.inject.Singleton
 
 /**
- * Example local unit test, which will execute on the development machine (host).
- *
- * See [testing documentation](http://d.android.com/tools/testing).
- *
  * @author Vignesh S
- * @version 1.0, 22/01/2020
+ * @version 1.0, 04/06/2020
  * @since 1.0
  */
-class ExampleUnitTest {
-	@Test
-	fun addition_isCorrect() {
-		assertEquals(4, 2 + 2)
-	}
+@Module
+@InstallIn(ApplicationComponent::class)
+object AppComponents {
+
+	@Provides
+	@Singleton
+	fun provideBankServiceController(@ApplicationContext context: Context) =
+		BankServiceController(context)
+
 }

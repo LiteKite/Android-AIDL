@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 LiteKite Startup. All rights reserved.
+ * Copyright 2021 LiteKite Startup. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,30 +14,15 @@
  * limitations under the License.
  */
 
-package com.litekite.client
+package com.litekite.connector.entity
 
-import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
-import com.litekite.connector.BankConnectorClient
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
 
 /**
  * @author Vignesh S
- * @version 1.0, 05/01/2020
+ * @version 1.0, 17/01/2021
  * @since 1.0
  */
-class MainActivity : AppCompatActivity() {
-
-	companion object {
-		val TAG: String = MainActivity::class.java.simpleName
-	}
-
-	private var connectorClient: BankConnectorClient? = null
-
-	override fun onCreate(savedInstanceState: Bundle?) {
-		super.onCreate(savedInstanceState)
-		setContentView(R.layout.activity_main)
-
-		connectorClient = BankConnectorClient(this)
-	}
-
-}
+@Parcelize
+data class SignupRequest(val username: String, val password: String): Parcelable

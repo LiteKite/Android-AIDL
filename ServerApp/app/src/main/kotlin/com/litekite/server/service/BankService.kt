@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 LiteKite Startup. All rights reserved.
+ * Copyright 2021 LiteKite Startup. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,13 +22,16 @@ import android.os.Binder
 import android.os.IBinder
 import android.os.RemoteCallbackList
 import android.util.Log
-import com.litekite.connector.IBankService
-import com.litekite.connector.IBankServiceCallback
+import com.litekite.connector.controller.IBankService
+import com.litekite.connector.controller.IBankServiceCallback
+import com.litekite.connector.entity.LoginRequest
+import com.litekite.connector.entity.SignupRequest
 import com.litekite.server.R
+import java.util.*
 
 /**
  * @author Vignesh S
- * @version 1.0, 05/01/2020
+ * @version 1.0, 05/01/2021
  * @since 1.0
  */
 class BankService : Service() {
@@ -41,30 +44,6 @@ class BankService : Service() {
 	 * This is a list of callbacks that have been registered with the service.
 	 */
 	val bankServiceCallbacks: RemoteCallbackList<IBankServiceCallback> = RemoteCallbackList()
-
-	private val binder = object : IBankService.Stub() {
-
-		override fun registerCallback(cb: IBankServiceCallback?) {
-			if (cb != null) {
-				bankServiceCallbacks.register(cb)
-			}
-		}
-
-		override fun unregisterCallback(cb: IBankServiceCallback?) {
-			if (cb != null) {
-				bankServiceCallbacks.unregister(cb)
-			}
-		}
-
-		override fun signupRequest(username: String?, password: String?) {
-			TODO("Not yet implemented")
-		}
-
-		override fun loginRequest(username: String?, password: String?) {
-			TODO("Not yet implemented")
-		}
-
-	}
 
 	override fun onCreate() {
 		super.onCreate()
@@ -80,7 +59,7 @@ class BankService : Service() {
 			return null
 		}
 		if (getString(R.string.action_bank_service) == intent.action) {
-			return binder
+			return BankBinder()
 		} else if (getString(R.string.action_bank_service_local_bind) == intent.action) {
 			return LocalBinder()
 		}
@@ -95,6 +74,58 @@ class BankService : Service() {
 	override fun onLowMemory() {
 		super.onLowMemory()
 		Log.d(TAG, "onLowMemory")
+	}
+
+	inner class BankBinder : IBankService.Stub() {
+
+		override fun registerCallback(cb: IBankServiceCallback?) {
+			if (cb != null) {
+				bankServiceCallbacks.register(cb, this)
+			}
+		}
+
+		override fun unregisterCallback(cb: IBankServiceCallback?) {
+			if (cb != null) {
+				bankServiceCallbacks.unregister(cb)
+			}
+		}
+
+		override fun signupRequest(signupRequest: SignupRequest?) {
+			if (signupRequest == null) {
+				return
+			}
+			val count = bankServiceCallbacks.beginBroadcast()
+			for (i in 0 until count) {
+				if (bankServiceCallbacks.getBroadcastCookie(i) == this) {
+					bankServiceCallbacks.getBroadcastItem(i).onSignupResponse(
+						200,
+						1,
+						signupRequest.username
+					)
+					break
+				}
+			}
+			bankServiceCallbacks.finishBroadcast()
+		}
+
+		override fun loginRequest(loginRequest: LoginRequest?) {
+			if (loginRequest == null) {
+				return
+			}
+			val count = bankServiceCallbacks.beginBroadcast()
+			for (i in 0 until count) {
+				if (bankServiceCallbacks.getBroadcastCookie(i) == this) {
+					bankServiceCallbacks.getBroadcastItem(i).onLoginResponse(
+						200,
+						1,
+						loginRequest.username
+					)
+					break
+				}
+			}
+			bankServiceCallbacks.finishBroadcast()
+		}
+
 	}
 
 	@Suppress("UNUSED")
