@@ -19,6 +19,8 @@
     <!--Toolbar-->
     <dimen name="tool_bar_back_button_width">24dp</dimen>
     <dimen name="tool_bar_back_button_height">24dp</dimen>
+    <dimen name="tool_bar_title_padding">5dp</dimen>
+    <dimen name="tool_bar_title_text_size">16sp</dimen>
 
     <!--Login-->
     <dimen name="layout_login_margin">30dp</dimen>
@@ -29,7 +31,19 @@
     <dimen name="edit_text_password_margin_top">20dp</dimen>
 
     <dimen name="button_login_height">64dp</dimen>
-    <dimen name="button_login__margin_top">20dp</dimen>
+    <dimen name="button_login_margin_top">20dp</dimen>
     <dimen name="button_login_text_size">18sp</dimen>
+
+    <!--Signup-->
+    <dimen name="layout_signup_margin">30dp</dimen>
+
+    <dimen name="edit_text_confirm_password_height">64dp</dimen>
+
+    <dimen name="button_signup_height">64dp</dimen>
+    <dimen name="button_signup_margin_top">20dp</dimen>
+    <dimen name="button_signup_text_size">18sp</dimen>
+
+    <!--Ripple Backgrounds-->
+    <dimen name="bg_ripple_round_48">48dp</dimen>
 
 </resources>

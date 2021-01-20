@@ -18,6 +18,7 @@
 package com.litekite.connector.controller;
 
 // Declare any non-default types here with import statements
+import com.litekite.connector.entity.AuthResponse;
 
 /**
  * Example of a callback interface used by IBankService to send
@@ -33,11 +34,11 @@ interface IBankServiceCallback {
     /**
      * Called upon the signup request process.
      */
-    void onSignupResponse(int responseState, int userId, String username);
+    void onSignupResponse(in AuthResponse authResponse);
 
     /**
      * Called upon the login request process.
      */
-    void onLoginResponse(int responseState, int userId, String username);
+    void onLoginResponse(in AuthResponse authResponse);
 
 }

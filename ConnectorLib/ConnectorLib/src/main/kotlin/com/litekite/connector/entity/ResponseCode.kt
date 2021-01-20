@@ -14,16 +14,22 @@
  * limitations under the License.
  */
 
-// LoginRequest.aidl
-package com.litekite.connector.entity;
-
-// Declare any non-default types here with import statements
+package com.litekite.connector.entity
 
 /**
- * An aidl of LoginRequest parcelable declaration
- *
  * @author Vignesh S
- * @version 1.0, 17/01/2021
+ * @version 1.0, 20/01/2021
  * @since 1.0
  */
-parcelable LoginRequest;
+@Suppress("UNUSED")
+@Retention(AnnotationRetention.SOURCE)
+annotation class ResponseCode {
+
+	companion object {
+		var ERROR_SIGN_UP_USER_EXISTS = -3
+		var ERROR_LOG_IN_USER_NOT_EXISTS = -2
+		var ERROR_LOG_IN_INCORRECT_USER_NAME_OR_PASSWORD = -1
+		var OK = 0
+	}
+
+}

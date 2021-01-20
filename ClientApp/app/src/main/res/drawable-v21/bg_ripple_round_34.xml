@@ -14,18 +14,6 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 -->
-<resources>
-
-    <string name="app_name">ClientApp</string>
-
-    <!--Login-->
-    <string name="hint_username">Username</string>
-    <string name="hint_password">Password</string>
-    <string name="login">Login</string>
-    <string name="or">Or</string>
-    <string name="sign_up">Sign up</string>
-
-    <!--Signup-->
-    <string name="hint_confirm_password">Confirm Password</string>
-
-</resources>
+<ripple xmlns:android="http://schemas.android.com/apk/res/android"
+    android:color="@android:color/darker_gray"
+    android:radius="@dimen/bg_ripple_round_48" />

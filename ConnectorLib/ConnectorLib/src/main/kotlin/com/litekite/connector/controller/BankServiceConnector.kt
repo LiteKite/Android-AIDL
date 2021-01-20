@@ -24,6 +24,7 @@ import android.os.IBinder
 import android.os.RemoteException
 import android.util.Log
 import com.litekite.connector.R
+import com.litekite.connector.entity.AuthResponse
 import com.litekite.connector.entity.LoginRequest
 import com.litekite.connector.entity.SignupRequest
 
@@ -32,7 +33,6 @@ import com.litekite.connector.entity.SignupRequest
  * @version 1.0, 12/01/2021
  * @since 1.0
  */
-@Suppress("UNUSED")
 class BankServiceConnector private constructor(private val context: Context) {
 
 	companion object {
@@ -66,12 +66,12 @@ class BankServiceConnector private constructor(private val context: Context) {
 
 	private val bankServiceCallback = object : IBankServiceCallback.Stub() {
 
-		override fun onSignupResponse(responseState: Int, userId: Int, username: String?) {
-			callback?.onSignupResponse()
+		override fun onSignupResponse(authResponse: AuthResponse) {
+			callback?.onSignupResponse(authResponse)
 		}
 
-		override fun onLoginResponse(responseState: Int, userId: Int, username: String?) {
-			callback?.onLoginResponse()
+		override fun onLoginResponse(authResponse: AuthResponse) {
+			callback?.onLoginResponse(authResponse)
 		}
 
 	}
@@ -143,9 +143,9 @@ class BankServiceConnector private constructor(private val context: Context) {
 
 	interface Callback {
 
-		fun onSignupResponse() {}
+		fun onSignupResponse(authResponse: AuthResponse) {}
 
-		fun onLoginResponse() {}
+		fun onLoginResponse(authResponse: AuthResponse) {}
 
 	}
 

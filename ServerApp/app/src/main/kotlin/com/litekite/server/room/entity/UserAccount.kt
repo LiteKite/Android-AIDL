@@ -14,16 +14,32 @@
  * limitations under the License.
  */
 
-// LoginRequest.aidl
-package com.litekite.connector.entity;
+package com.litekite.server.room.entity
 
-// Declare any non-default types here with import statements
+import androidx.room.ColumnInfo
+import androidx.room.Entity
+import androidx.room.Index
+import androidx.room.PrimaryKey
 
 /**
- * An aidl of LoginRequest parcelable declaration
- *
  * @author Vignesh S
- * @version 1.0, 17/01/2021
+ * @version 1.0, 20/01/2021
  * @since 1.0
  */
-parcelable LoginRequest;
+@Entity(tableName = "user_account", indices = [Index("user_id")])
+data class UserAccount(
+
+	@PrimaryKey(autoGenerate = true)
+	@ColumnInfo(name = "user_id")
+	val userId: Int = 0,
+
+	@ColumnInfo(name = "username")
+	val username: String,
+
+	@ColumnInfo(name = "password")
+	val password: String,
+
+	@ColumnInfo(name = "balance")
+	val balance: Int = 0
+
+)

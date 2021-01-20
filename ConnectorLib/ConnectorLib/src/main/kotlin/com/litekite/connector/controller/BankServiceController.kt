@@ -17,7 +17,8 @@
 package com.litekite.connector.controller
 
 import android.content.Context
-import com.litekite.client.base.CallbackProvider
+import com.litekite.connector.base.CallbackProvider
+import com.litekite.connector.entity.AuthResponse
 import com.litekite.connector.entity.LoginRequest
 import com.litekite.connector.entity.SignupRequest
 
@@ -26,12 +27,9 @@ import com.litekite.connector.entity.SignupRequest
  * @version 1.0, 17/01/2021
  * @since 1.0
  */
+@Suppress("UNUSED")
 class BankServiceController(context: Context) : BankServiceConnector.Callback,
 	CallbackProvider<BankServiceConnector.Callback> {
-
-	companion object {
-		val TAG: String = BankServiceController::class.java.simpleName
-	}
 
 	private val serviceProvider = BankServiceConnector.Builder(context)
 		.setCallback(this)
@@ -53,12 +51,12 @@ class BankServiceController(context: Context) : BankServiceConnector.Callback,
 		serviceProvider.loginRequest(loginRequest)
 	}
 
-	override fun onSignupResponse() {
-
+	override fun onSignupResponse(authResponse: AuthResponse) {
+		callbacks.forEach { it.onSignupResponse(authResponse) }
 	}
 
-	override fun onLoginResponse() {
-
+	override fun onLoginResponse(authResponse: AuthResponse) {
+		callbacks.forEach { it.onLoginResponse(authResponse) }
 	}
 
 }

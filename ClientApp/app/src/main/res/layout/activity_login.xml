@@ -63,16 +63,67 @@
             android:id="@+id/b_login"
             android:layout_width="match_parent"
             android:layout_height="@dimen/button_login_height"
-            android:layout_marginTop="@dimen/button_login__margin_top"
+            android:layout_marginTop="@dimen/button_login_margin_top"
             android:onClick="@{(view) -> presenter.onClick(view)}"
             android:text="@string/login"
             android:textAllCaps="false"
-            android:textColor="@color/black"
+            android:textColor="@color/white"
             android:textSize="@dimen/button_login_text_size"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/et_password" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_marginEnd="10dp"
+            android:layout_marginRight="10dp"
+            android:background="@android:color/darker_gray"
+            app:layout_constraintBottom_toBottomOf="@id/tv_separator"
+            app:layout_constraintEnd_toStartOf="@id/tv_separator"
+            app:layout_constraintTop_toTopOf="@id/tv_separator" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/tv_separator"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="40dp"
+            android:gravity="center_horizontal"
+            android:text="@string/or"
+            android:textColor="@android:color/darker_gray"
+            android:textSize="18sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/b_login" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginLeft="10dp"
+            android:background="@android:color/darker_gray"
+            app:layout_constraintBottom_toBottomOf="@id/tv_separator"
+            app:layout_constraintStart_toEndOf="@id/tv_separator"
+            app:layout_constraintTop_toTopOf="@id/tv_separator" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/tv_signup"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:background="@drawable/bg_ripple_round_34"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center_horizontal"
+            android:onClick="@{(view) -> presenter.onClick(view)}"
+            android:padding="10dp"
+            android:text="@string/sign_up"
+            android:textColor="@color/white"
+            android:textSize="18sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_separator" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

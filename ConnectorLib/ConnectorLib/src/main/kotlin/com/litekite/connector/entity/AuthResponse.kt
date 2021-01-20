@@ -14,16 +14,25 @@
  * limitations under the License.
  */
 
-// LoginRequest.aidl
-package com.litekite.connector.entity;
+package com.litekite.connector.entity
 
-// Declare any non-default types here with import statements
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
 
 /**
- * An aidl of LoginRequest parcelable declaration
- *
  * @author Vignesh S
- * @version 1.0, 17/01/2021
+ * @version 1.0, 20/01/2021
  * @since 1.0
  */
-parcelable LoginRequest;
+@Suppress("UNUSED")
+@Parcelize
+open class AuthResponse : Parcelable {
+
+	@Parcelize
+	data class Success(@ResponseCode val responseCode: Int, val userId: Int, val username: String) :
+		AuthResponse(), Parcelable
+
+	@Parcelize
+	data class Failure(@ResponseCode val responseCode: Int) : AuthResponse(), Parcelable
+
+}

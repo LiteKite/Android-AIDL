@@ -25,4 +25,4 @@ import kotlinx.parcelize.Parcelize
  * @since 1.0
  */
 @Parcelize
-data class SignupRequest(val username: String, val password: String): Parcelable
+data class SignupRequest(val username: String, val password: String) : Parcelable

@@ -14,16 +14,19 @@
  * limitations under the License.
  */
 
-package com.litekite.client.login
+package com.litekite.client.signup
 
 import android.app.Application
 import android.view.View
 import androidx.databinding.ObservableField
 import androidx.hilt.lifecycle.ViewModelInject
-import androidx.lifecycle.*
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleObserver
+import androidx.lifecycle.OnLifecycleEvent
 import com.litekite.client.R
 import com.litekite.client.app.ClientApp
-import com.litekite.client.signup.SignupActivity
+import com.litekite.client.login.LoginVM
 import com.litekite.connector.controller.BankServiceConnector
 import com.litekite.connector.controller.BankServiceController
 import com.litekite.connector.entity.AuthResponse
@@ -33,39 +36,27 @@ import com.litekite.connector.entity.AuthResponse
  * @version 1.0, 19/01/2020
  * @since 1.0
  */
-class LoginVM @ViewModelInject constructor(
+class SignupVM @ViewModelInject constructor(
 	application: Application,
 	private val bankServiceController: BankServiceController
 ) : AndroidViewModel(application), LifecycleObserver, BankServiceConnector.Callback {
 
-	companion object {
-		val TAG: String = LoginVM::class.java.simpleName
-	}
-
-	private val isLoginCompleted: MutableLiveData<Boolean> = MutableLiveData()
-
 	val username: ObservableField<String> = ObservableField()
 	val password: ObservableField<String> = ObservableField()
-
-	fun getIsLoginCompleted(): LiveData<Boolean> {
-		return isLoginCompleted
-	}
+	val confirmPassword: ObservableField<String> = ObservableField()
 
 	fun onClick(v: View) {
 		when (v.id) {
-			R.id.b_login -> {
-				ClientApp.printLog(TAG, "username: ${username.get()} password: ${password.get()}")
-				bankServiceController.login("${username.get()}", "${password.get()}")
-			}
-			R.id.tv_signup -> {
-				SignupActivity.start(v.context)
+			R.id.b_signup -> {
+				ClientApp.printLog(LoginVM.TAG, "username: ${username.get()} password: ${password.get()}")
+				bankServiceController.signup("${username.get()}", "${password.get()}")
 			}
 		}
 	}
 
-	override fun onLoginResponse(authResponse: AuthResponse) {
-		super.onLoginResponse(authResponse)
-		ClientApp.printLog(TAG, "onLoginResponse:")
+	override fun onSignupResponse(authResponse: AuthResponse) {
+		super.onSignupResponse(authResponse)
+		ClientApp.printLog(LoginVM.TAG, "onSignupResponse:")
 		when (authResponse) {
 			is AuthResponse.Success -> {
 

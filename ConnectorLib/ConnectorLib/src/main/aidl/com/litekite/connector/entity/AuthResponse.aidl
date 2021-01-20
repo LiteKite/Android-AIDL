@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-// LoginRequest.aidl
+// AuthResponse.aidl
 package com.litekite.connector.entity;
 
 // Declare any non-default types here with import statements
 
 /**
- * An aidl of LoginRequest parcelable declaration
+ * An aidl of AuthResponse parcelable declaration
  *
  * @author Vignesh S
- * @version 1.0, 17/01/2021
+ * @version 1.0, 20/01/2021
  * @since 1.0
  */
-parcelable LoginRequest;
+parcelable AuthResponse;

@@ -14,24 +14,29 @@
  * limitations under the License.
  */
 
-package com.litekite.connector.base
+package com.litekite.server.room.dao
+
+import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
+import androidx.room.Query
+import com.litekite.server.room.entity.UserAccount
 
 /**
  * @author Vignesh S
- * @version 1.0, 31/08/2020
+ * @version 1.0, 20/01/2021
  * @since 1.0
  */
-@Suppress("UNUSED")
-interface CallbackProvider<T> {
+@Dao
+interface BankDao {
 
-	val callbacks: ArrayList<T>
+	@Query("select exists(select * from user_account where username = :username)")
+	fun isUserAccountExists(username: String): Boolean
 
-	fun addCallback(cb: T) {
-		callbacks.add(cb)
-	}
+	@Query("select * from user_account where username = :username AND password = :password")
+	fun getUserAccount(username: String, password: String): UserAccount?
 
-	fun removeCallback(cb: T) {
-		callbacks.remove(cb)
-	}
+	@Insert(onConflict = OnConflictStrategy.REPLACE)
+	fun saveUserAccount(userAccount: UserAccount) : UserAccount
 
 }

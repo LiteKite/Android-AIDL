@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+   Copyright 2021 LiteKite Startup. All rights reserved.
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+-->
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".signup.SignupActivity">
+
+    <data>
+
+        <variable
+            name="presenter"
+            type="com.litekite.client.signup.SignupVM" />
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <include
+            android:id="@+id/tb_widget"
+            layout="@layout/widget_toolbar" />
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/et_username"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/edit_text_username_height"
+            android:layout_marginHorizontal="@dimen/layout_signup_margin"
+            android:layout_marginTop="@dimen/layout_signup_margin"
+            android:hint="@string/hint_username"
+            android:inputType="text"
+            android:text="@={presenter.username}"
+            app:layout_constraintBottom_toTopOf="@+id/et_password"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_chainStyle="packed" />
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/et_password"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/edit_text_password_height"
+            android:layout_marginHorizontal="@dimen/layout_signup_margin"
+            android:layout_marginTop="@dimen/edit_text_password_margin_top"
+            android:hint="@string/hint_password"
+            android:inputType="textPassword"
+            android:text="@={presenter.password}"
+            app:layout_constraintBottom_toTopOf="@+id/b_signup"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/et_username"
+            app:layout_constraintVertical_chainStyle="packed" />
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/et_confirm_password"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/edit_text_password_height"
+            android:layout_marginHorizontal="@dimen/layout_signup_margin"
+            android:layout_marginTop="@dimen/edit_text_password_margin_top"
+            android:hint="@string/hint_confirm_password"
+            android:inputType="textPassword"
+            android:text="@={presenter.confirmPassword}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/et_password"
+            app:layout_constraintVertical_chainStyle="packed" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/b_signup"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/button_signup_height"
+            android:layout_marginHorizontal="@dimen/layout_signup_margin"
+            android:layout_marginTop="@dimen/button_signup_margin_top"
+            android:onClick="@{(view) -> presenter.onClick(view)}"
+            android:text="@string/sign_up"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            android:textSize="@dimen/button_signup_text_size"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/et_confirm_password" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>
