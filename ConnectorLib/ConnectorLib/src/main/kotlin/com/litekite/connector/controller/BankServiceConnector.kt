@@ -25,6 +25,7 @@ import android.os.RemoteException
 import android.util.Log
 import com.litekite.connector.R
 import com.litekite.connector.entity.AuthResponse
+import com.litekite.connector.entity.FailureResponse
 import com.litekite.connector.entity.LoginRequest
 import com.litekite.connector.entity.SignupRequest
 
@@ -72,6 +73,10 @@ class BankServiceConnector private constructor(private val context: Context) {
 
 		override fun onLoginResponse(authResponse: AuthResponse) {
 			callback?.onLoginResponse(authResponse)
+		}
+
+		override fun onFailureResponse(failureResponse: FailureResponse) {
+			callback?.onFailureResponse(failureResponse)
 		}
 
 	}
@@ -124,6 +129,7 @@ class BankServiceConnector private constructor(private val context: Context) {
 			e.printStackTrace()
 		}
 		context.unbindService(serviceConnection)
+		serviceConnected = false
 	}
 
 	class Builder(context: Context) {
@@ -146,6 +152,8 @@ class BankServiceConnector private constructor(private val context: Context) {
 		fun onSignupResponse(authResponse: AuthResponse) {}
 
 		fun onLoginResponse(authResponse: AuthResponse) {}
+
+		fun onFailureResponse(failureResponse: FailureResponse)
 
 	}
 

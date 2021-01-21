@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
    Copyright 2021 LiteKite Startup. All rights reserved.
 
    Licensed under the Apache License, Version 2.0 (the "License");
@@ -24,8 +23,18 @@
     <string name="login">Login</string>
     <string name="or">Or</string>
     <string name="sign_up">Sign up</string>
+    <string name="login_success">Login was successful!</string>
+    <string name="err_all_fields_are_empty">Please fill all the fields</string>
+    <string name="err_incorrect_username_or_password">Incorrect username or password</string>
+    <string name="err_user_not_exists">User does not exists. Please sign up to
+        create a new user!</string>
 
     <!--Signup-->
     <string name="hint_confirm_password">Confirm Password</string>
+    <string name="err_incorrect_confirm_password">Your password and confirm
+        password are mismatching!</string>
+    <string name="err_user_already_exists">User already exists. Please choose a
+        different username or try login</string>
+    <string name="sign_up_success">Sign up was successfully completed!</string>
 
 </resources>

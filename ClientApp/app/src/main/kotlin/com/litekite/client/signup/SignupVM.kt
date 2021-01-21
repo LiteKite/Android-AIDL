@@ -17,19 +17,20 @@
 package com.litekite.client.signup
 
 import android.app.Application
+import android.text.TextUtils
 import android.view.View
 import androidx.databinding.ObservableField
 import androidx.hilt.lifecycle.ViewModelInject
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleObserver
-import androidx.lifecycle.OnLifecycleEvent
+import androidx.lifecycle.*
 import com.litekite.client.R
 import com.litekite.client.app.ClientApp
-import com.litekite.client.login.LoginVM
+import com.litekite.client.base.BaseActivity
 import com.litekite.connector.controller.BankServiceConnector
 import com.litekite.connector.controller.BankServiceController
 import com.litekite.connector.entity.AuthResponse
+import com.litekite.connector.entity.FailureResponse
+import com.litekite.connector.entity.RequestCode
+import com.litekite.connector.entity.ResponseCode
 
 /**
  * @author Vignesh S
@@ -41,42 +42,73 @@ class SignupVM @ViewModelInject constructor(
 	private val bankServiceController: BankServiceController
 ) : AndroidViewModel(application), LifecycleObserver, BankServiceConnector.Callback {
 
+	companion object {
+		val TAG: String = SignupVM::class.java.simpleName
+	}
+
 	val username: ObservableField<String> = ObservableField()
 	val password: ObservableField<String> = ObservableField()
 	val confirmPassword: ObservableField<String> = ObservableField()
 
+	private val signupCompleted: MutableLiveData<Boolean> = MutableLiveData()
+
+	fun isSignupCompleted(): LiveData<Boolean> {
+		return signupCompleted
+	}
+
 	fun onClick(v: View) {
 		when (v.id) {
 			R.id.b_signup -> {
-				ClientApp.printLog(LoginVM.TAG, "username: ${username.get()} password: ${password.get()}")
+				if (TextUtils.isEmpty(username.get())
+					|| TextUtils.isEmpty(password.get())
+					|| TextUtils.isEmpty(confirmPassword.get())
+				) {
+					(v.context as BaseActivity).showSnackBar(
+						v.rootView,
+						R.string.err_all_fields_are_empty
+					)
+					return
+				}
+				if (password.get() != confirmPassword.get()) {
+					(v.context as BaseActivity).showSnackBar(
+						v.rootView,
+						R.string.err_incorrect_confirm_password
+					)
+					return
+				}
 				bankServiceController.signup("${username.get()}", "${password.get()}")
+			}
+		}
+	}
+
+	override fun onFailureResponse(failureResponse: FailureResponse) {
+		ClientApp.printLog(TAG, "onFailureResponse: ${failureResponse.responseCode}")
+		if (failureResponse.requestCode == RequestCode.SIGNUP) {
+			if (failureResponse.responseCode == ResponseCode.ERROR_SIGN_UP_USER_EXISTS) {
+				ClientApp.showToast(
+					getApplication() as ClientApp,
+					(getApplication() as ClientApp).getString(R.string.err_user_already_exists)
+				)
 			}
 		}
 	}
 
 	override fun onSignupResponse(authResponse: AuthResponse) {
 		super.onSignupResponse(authResponse)
-		ClientApp.printLog(LoginVM.TAG, "onSignupResponse:")
-		when (authResponse) {
-			is AuthResponse.Success -> {
-
-			}
-			is AuthResponse.Failure -> {
-
-			}
+		ClientApp.printLog(TAG, "onSignupResponse:")
+		if (authResponse.responseCode == ResponseCode.OK) {
+			signupCompleted.value = true
 		}
 	}
 
 	@OnLifecycleEvent(Lifecycle.Event.ON_CREATE)
 	fun onCreate() {
 		bankServiceController.addCallback(this)
-		bankServiceController.connect()
 	}
 
 	@OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
-	fun onPause() {
+	fun onDestroy() {
 		bankServiceController.removeCallback(this)
-		bankServiceController.disconnect()
 	}
 
 }

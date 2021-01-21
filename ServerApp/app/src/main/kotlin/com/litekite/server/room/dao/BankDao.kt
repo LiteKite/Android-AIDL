@@ -37,6 +37,6 @@ interface BankDao {
 	fun getUserAccount(username: String, password: String): UserAccount?
 
 	@Insert(onConflict = OnConflictStrategy.REPLACE)
-	fun saveUserAccount(userAccount: UserAccount) : UserAccount
+	fun saveUserAccount(userAccount: UserAccount) : Long
 
 }

@@ -22,7 +22,9 @@ import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.Observer
 import com.litekite.client.R
+import com.litekite.client.app.ClientApp
 import com.litekite.client.base.BaseActivity
 import com.litekite.client.databinding.ActivitySignupBinding
 import dagger.hilt.android.AndroidEntryPoint
@@ -41,7 +43,7 @@ class SignupActivity : BaseActivity() {
 	companion object {
 
 		/**
-		 * Launches HomeActivity.
+		 * Launches SignupActivity.
 		 *
 		 * @param context An Activity Context.
 		 */
@@ -53,6 +55,13 @@ class SignupActivity : BaseActivity() {
 			}
 		}
 
+	}
+
+	private val signupCompleteObserver = Observer<Boolean> { isCompleted ->
+		if (isCompleted) {
+			ClientApp.showToast(applicationContext, getString(R.string.sign_up_success))
+			onBackPressed()
+		}
 	}
 
 	override fun onCreate(savedInstanceState: Bundle?) {
@@ -70,6 +79,7 @@ class SignupActivity : BaseActivity() {
 		)
 		signupBinding.presenter = signupVM
 		lifecycle.addObserver(signupVM)
+		signupVM.isSignupCompleted().observe(this, signupCompleteObserver)
 	}
 
 }

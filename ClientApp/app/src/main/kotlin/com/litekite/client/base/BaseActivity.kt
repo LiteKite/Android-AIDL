@@ -82,7 +82,7 @@ open class BaseActivity : AppCompatActivity() {
 	 * screen.
 	 * @param stringResID A message that to be displayed inside a SnackBar.
 	 */
-	protected fun showSnackBar(v: View, @StringRes stringResID: Int) {
+	fun showSnackBar(v: View, @StringRes stringResID: Int) {
 		Snackbar.make(v, stringResID, Snackbar.LENGTH_LONG).show()
 	}
 

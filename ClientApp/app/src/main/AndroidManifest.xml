@@ -36,6 +36,8 @@
 
         <activity android:name=".signup.SignupActivity" />
 
+        <activity android:name=".home.HomeActivity" />
+
     </application>
 
 </manifest>

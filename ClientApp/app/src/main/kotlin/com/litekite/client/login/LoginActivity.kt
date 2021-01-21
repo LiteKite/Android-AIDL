@@ -21,8 +21,10 @@ import androidx.activity.viewModels
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import com.litekite.client.R
+import com.litekite.client.app.ClientApp
 import com.litekite.client.base.BaseActivity
 import com.litekite.client.databinding.ActivityLoginBinding
+import com.litekite.client.home.HomeActivity
 import dagger.hilt.android.AndroidEntryPoint
 
 /**
@@ -36,8 +38,12 @@ class LoginActivity : BaseActivity() {
 	private lateinit var loginBinding: ActivityLoginBinding
 	private val loginVM: LoginVM by viewModels()
 
-	private val loginCompleteObserver = Observer { isCompleted: Boolean ->
-		if (isCompleted) startHomeActivity()
+	private val loginCompleteObserver = Observer<Boolean> { isCompleted ->
+		if (isCompleted) {
+			ClientApp.showToast(applicationContext, getString(R.string.login_success))
+			startHomeActivity()
+			finish()
+		}
 	}
 
 	override fun onCreate(savedInstanceState: Bundle?) {
@@ -49,11 +55,11 @@ class LoginActivity : BaseActivity() {
 	private fun init() {
 		loginBinding.presenter = loginVM
 		lifecycle.addObserver(loginVM)
-		loginVM.getIsLoginCompleted().observe(this, loginCompleteObserver)
+		loginVM.isLoginCompleted().observe(this, loginCompleteObserver)
 	}
 
 	private fun startHomeActivity() {
-		TODO("launch banking withdraw or deposit activity")
+		HomeActivity.start(this)
 	}
 
 }

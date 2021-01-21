@@ -19,6 +19,7 @@ package com.litekite.connector.controller;
 
 // Declare any non-default types here with import statements
 import com.litekite.connector.entity.AuthResponse;
+import com.litekite.connector.entity.FailureResponse;
 
 /**
  * Example of a callback interface used by IBankService to send
@@ -40,5 +41,10 @@ interface IBankServiceCallback {
      * Called upon the login request process.
      */
     void onLoginResponse(in AuthResponse authResponse);
+
+    /**
+     * Called upon any failure occurs with request process.
+     */
+    void onFailureResponse(in FailureResponse failureResponse);
 
 }

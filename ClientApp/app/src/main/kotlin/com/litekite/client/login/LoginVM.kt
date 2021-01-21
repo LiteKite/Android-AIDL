@@ -17,16 +17,21 @@
 package com.litekite.client.login
 
 import android.app.Application
+import android.text.TextUtils
 import android.view.View
 import androidx.databinding.ObservableField
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.*
 import com.litekite.client.R
 import com.litekite.client.app.ClientApp
+import com.litekite.client.base.BaseActivity
 import com.litekite.client.signup.SignupActivity
 import com.litekite.connector.controller.BankServiceConnector
 import com.litekite.connector.controller.BankServiceController
 import com.litekite.connector.entity.AuthResponse
+import com.litekite.connector.entity.FailureResponse
+import com.litekite.connector.entity.RequestCode
+import com.litekite.connector.entity.ResponseCode
 
 /**
  * @author Vignesh S
@@ -42,19 +47,25 @@ class LoginVM @ViewModelInject constructor(
 		val TAG: String = LoginVM::class.java.simpleName
 	}
 
-	private val isLoginCompleted: MutableLiveData<Boolean> = MutableLiveData()
+	private val loginCompleted: MutableLiveData<Boolean> = MutableLiveData()
 
 	val username: ObservableField<String> = ObservableField()
 	val password: ObservableField<String> = ObservableField()
 
-	fun getIsLoginCompleted(): LiveData<Boolean> {
-		return isLoginCompleted
+	fun isLoginCompleted(): LiveData<Boolean> {
+		return loginCompleted
 	}
 
 	fun onClick(v: View) {
 		when (v.id) {
 			R.id.b_login -> {
-				ClientApp.printLog(TAG, "username: ${username.get()} password: ${password.get()}")
+				if (TextUtils.isEmpty(username.get()) || TextUtils.isEmpty(password.get())) {
+					(v.context as BaseActivity).showSnackBar(
+						v.rootView,
+						R.string.err_all_fields_are_empty
+					)
+					return
+				}
 				bankServiceController.login("${username.get()}", "${password.get()}")
 			}
 			R.id.tv_signup -> {
@@ -66,12 +77,27 @@ class LoginVM @ViewModelInject constructor(
 	override fun onLoginResponse(authResponse: AuthResponse) {
 		super.onLoginResponse(authResponse)
 		ClientApp.printLog(TAG, "onLoginResponse:")
-		when (authResponse) {
-			is AuthResponse.Success -> {
+		if (authResponse.responseCode == ResponseCode.OK) {
+			loginCompleted.value = true
+		}
+	}
 
-			}
-			is AuthResponse.Failure -> {
-
+	override fun onFailureResponse(failureResponse: FailureResponse) {
+		ClientApp.printLog(TAG, "onFailureResponse: ${failureResponse.responseCode}")
+		if (failureResponse.requestCode == RequestCode.LOGIN) {
+			when (failureResponse.responseCode) {
+				ResponseCode.ERROR_LOG_IN_INCORRECT_USER_NAME_OR_PASSWORD -> {
+					ClientApp.showToast(
+						getApplication() as ClientApp,
+						(getApplication() as ClientApp).getString(R.string.err_incorrect_username_or_password)
+					)
+				}
+				ResponseCode.ERROR_LOG_IN_USER_NOT_EXISTS -> {
+					ClientApp.showToast(
+						getApplication() as ClientApp,
+						(getApplication() as ClientApp).getString(R.string.err_user_not_exists)
+					)
+				}
 			}
 		}
 	}
@@ -79,13 +105,11 @@ class LoginVM @ViewModelInject constructor(
 	@OnLifecycleEvent(Lifecycle.Event.ON_CREATE)
 	fun onCreate() {
 		bankServiceController.addCallback(this)
-		bankServiceController.connect()
 	}
 
 	@OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
-	fun onPause() {
+	fun onDestroy() {
 		bankServiceController.removeCallback(this)
-		bankServiceController.disconnect()
 	}
 
 }

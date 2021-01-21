@@ -24,10 +24,7 @@ import android.os.RemoteCallbackList
 import android.util.Log
 import com.litekite.connector.controller.IBankService
 import com.litekite.connector.controller.IBankServiceCallback
-import com.litekite.connector.entity.AuthResponse
-import com.litekite.connector.entity.LoginRequest
-import com.litekite.connector.entity.ResponseCode
-import com.litekite.connector.entity.SignupRequest
+import com.litekite.connector.entity.*
 import com.litekite.server.R
 import com.litekite.server.room.db.BankDatabase
 import com.litekite.server.room.entity.UserAccount
@@ -98,30 +95,27 @@ class BankService : Service() {
 			if (signupRequest == null) {
 				return
 			}
-
-			val authResponse: AuthResponse
-
 			val isUserExists = BankDatabase.getBankDatabase(this@BankService)
 				.bankDao
 				.isUserAccountExists(signupRequest.username)
-
-			authResponse = if (isUserExists) {
-				AuthResponse.Failure(ResponseCode.ERROR_SIGN_UP_USER_EXISTS)
+			if (isUserExists) {
+				remoteBroadcast { index ->
+					bankServiceCallbacks.getBroadcastItem(index).onFailureResponse(
+						FailureResponse(RequestCode.SIGNUP, ResponseCode.ERROR_SIGN_UP_USER_EXISTS)
+					)
+				}
 			} else {
 				val userAccount = UserAccount(
 					username = signupRequest.username,
-					password = signupRequest.password)
-
-				val result = BankDatabase.getBankDatabase(this@BankService)
-					.bankDao.saveUserAccount(userAccount)
-
-				AuthResponse.Success(ResponseCode.OK, result.userId, result.username)
-			}
-
-			remoteBroadcast { index ->
-				bankServiceCallbacks.getBroadcastItem(index).onSignupResponse(
-					authResponse
+					password = signupRequest.password
 				)
+				val userId = BankDatabase.getBankDatabase(this@BankService)
+					.bankDao.saveUserAccount(userAccount)
+				remoteBroadcast { index ->
+					bankServiceCallbacks.getBroadcastItem(index).onSignupResponse(
+						AuthResponse(ResponseCode.OK, userId, userAccount.username)
+					)
+				}
 			}
 		}
 
@@ -129,37 +123,42 @@ class BankService : Service() {
 			if (loginRequest == null) {
 				return
 			}
-
-			val authResponse: AuthResponse
-
 			val isUserExists = BankDatabase.getBankDatabase(this@BankService)
 				.bankDao
 				.isUserAccountExists(loginRequest.username)
-
-			if (isUserExists) {
-				authResponse = AuthResponse.Failure(ResponseCode.ERROR_LOG_IN_USER_NOT_EXISTS)
+			if (!isUserExists) {
+				remoteBroadcast { index ->
+					bankServiceCallbacks.getBroadcastItem(index).onFailureResponse(
+						FailureResponse(
+							RequestCode.LOGIN,
+							ResponseCode.ERROR_LOG_IN_USER_NOT_EXISTS
+						)
+					)
+				}
 			} else {
-
 				val userAccount = BankDatabase.getBankDatabase(this@BankService)
 					.bankDao
 					.getUserAccount(loginRequest.username, loginRequest.password)
-
-				authResponse = if (userAccount == null) {
-					AuthResponse.Failure(ResponseCode.ERROR_LOG_IN_INCORRECT_USER_NAME_OR_PASSWORD)
+				if (userAccount == null) {
+					remoteBroadcast { index ->
+						bankServiceCallbacks.getBroadcastItem(index).onFailureResponse(
+							FailureResponse(
+								RequestCode.LOGIN,
+								ResponseCode.ERROR_LOG_IN_INCORRECT_USER_NAME_OR_PASSWORD
+							)
+						)
+					}
 				} else {
-					AuthResponse.Success(
-						ResponseCode.OK,
-						userAccount.userId,
-						userAccount.username
-					)
+					remoteBroadcast { index ->
+						bankServiceCallbacks.getBroadcastItem(index).onLoginResponse(
+							AuthResponse(
+								ResponseCode.OK,
+								userAccount.userId,
+								userAccount.username
+							)
+						)
+					}
 				}
-
-			}
-
-			remoteBroadcast { index ->
-				bankServiceCallbacks.getBroadcastItem(index).onLoginResponse(
-					authResponse
-				)
 			}
 		}
 

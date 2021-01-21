@@ -31,7 +31,7 @@ data class UserAccount(
 
 	@PrimaryKey(autoGenerate = true)
 	@ColumnInfo(name = "user_id")
-	val userId: Int = 0,
+	val userId: Long = 0,
 
 	@ColumnInfo(name = "username")
 	val username: String,
@@ -40,6 +40,6 @@ data class UserAccount(
 	val password: String,
 
 	@ColumnInfo(name = "balance")
-	val balance: Int = 0
+	val balance: Double = 0.0
 
 )

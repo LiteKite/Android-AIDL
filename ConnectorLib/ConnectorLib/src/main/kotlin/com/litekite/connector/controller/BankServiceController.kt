@@ -19,6 +19,7 @@ package com.litekite.connector.controller
 import android.content.Context
 import com.litekite.connector.base.CallbackProvider
 import com.litekite.connector.entity.AuthResponse
+import com.litekite.connector.entity.FailureResponse
 import com.litekite.connector.entity.LoginRequest
 import com.litekite.connector.entity.SignupRequest
 
@@ -37,9 +38,27 @@ class BankServiceController(context: Context) : BankServiceConnector.Callback,
 
 	override val callbacks: ArrayList<BankServiceConnector.Callback> = ArrayList()
 
-	fun connect() = serviceProvider.connectService()
+	override fun addCallback(cb: BankServiceConnector.Callback) {
+		super.addCallback(cb)
+		if (callbacks.size > 0) {
+			connect()
+		}
+	}
 
-	fun disconnect() = serviceProvider.disconnectService()
+	override fun removeCallback(cb: BankServiceConnector.Callback) {
+		super.removeCallback(cb)
+		if (callbacks.size == 0) {
+			disconnect()
+		}
+	}
+
+	private fun connect() {
+		serviceProvider.connectService()
+	}
+
+	private fun disconnect() {
+		serviceProvider.disconnectService()
+	}
 
 	fun signup(username: String, password: String) {
 		val signupRequest = SignupRequest(username, password)
@@ -57,6 +76,10 @@ class BankServiceController(context: Context) : BankServiceConnector.Callback,
 
 	override fun onLoginResponse(authResponse: AuthResponse) {
 		callbacks.forEach { it.onLoginResponse(authResponse) }
+	}
+
+	override fun onFailureResponse(failureResponse: FailureResponse) {
+		callbacks.forEach { it.onFailureResponse(failureResponse) }
 	}
 
 }

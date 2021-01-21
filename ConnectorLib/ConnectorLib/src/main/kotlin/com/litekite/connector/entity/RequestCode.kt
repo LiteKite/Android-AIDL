@@ -16,17 +16,18 @@
 
 package com.litekite.connector.entity
 
-import android.os.Parcelable
-import kotlinx.parcelize.Parcelize
-
 /**
  * @author Vignesh S
- * @version 1.0, 20/01/2021
+ * @version 1.0, 21/01/2021
  * @since 1.0
  */
-@Parcelize
-data class AuthResponse(
-	@ResponseCode val responseCode: Int,
-	val userId: Long,
-	val username: String
-) : Parcelable
+@Suppress("UNUSED")
+@Retention(AnnotationRetention.SOURCE)
+annotation class RequestCode {
+
+	companion object {
+		var LOGIN = 0
+		var SIGNUP = 1
+	}
+
+}

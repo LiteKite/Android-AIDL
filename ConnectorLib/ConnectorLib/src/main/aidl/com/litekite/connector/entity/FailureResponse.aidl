@@ -14,19 +14,16 @@
  * limitations under the License.
  */
 
-package com.litekite.connector.entity
+// FailureResponse.aidl
+package com.litekite.connector.entity;
 
-import android.os.Parcelable
-import kotlinx.parcelize.Parcelize
+// Declare any non-default types here with import statements
 
 /**
+ * An aidl of FailureResponse parcelable declaration
+ *
  * @author Vignesh S
- * @version 1.0, 20/01/2021
+ * @version 1.0, 21/01/2021
  * @since 1.0
  */
-@Parcelize
-data class AuthResponse(
-	@ResponseCode val responseCode: Int,
-	val userId: Long,
-	val username: String
-) : Parcelable
+parcelable FailureResponse;
