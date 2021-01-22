@@ -35,9 +35,8 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:padding="@dimen/tool_bar_title_padding"
-            android:textAllCaps="true"
             android:textColor="@color/white"
-            android:textSize="@dimen/tool_bar_title_text_size"
+            android:textSize="@dimen/text_size_18"
             android:textStyle="bold"
             tools:text="Toolbar Title" />
 

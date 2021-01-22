@@ -25,6 +25,7 @@ import androidx.lifecycle.*
 import com.litekite.client.R
 import com.litekite.client.app.ClientApp
 import com.litekite.client.base.BaseActivity
+import com.litekite.client.preference.PreferenceController
 import com.litekite.client.signup.SignupActivity
 import com.litekite.connector.controller.BankServiceConnector
 import com.litekite.connector.controller.BankServiceController
@@ -40,7 +41,8 @@ import com.litekite.connector.entity.ResponseCode
  */
 class LoginVM @ViewModelInject constructor(
 	application: Application,
-	private val bankServiceController: BankServiceController
+	private val bankServiceController: BankServiceController,
+	private val preferenceController: PreferenceController
 ) : AndroidViewModel(application), LifecycleObserver, BankServiceConnector.Callback {
 
 	companion object {
@@ -51,6 +53,15 @@ class LoginVM @ViewModelInject constructor(
 
 	val username: ObservableField<String> = ObservableField()
 	val password: ObservableField<String> = ObservableField()
+
+	fun isLoginCompletedBefore() =
+		preferenceController.getBoolean(PreferenceController.PREFERENCE_LOGIN_COMPLETE_STATE)
+
+	private fun storeLoginCompleted() =
+		preferenceController.store(PreferenceController.PREFERENCE_LOGIN_COMPLETE_STATE, true)
+
+	private fun storeLoggedInUserId(userId: Long) =
+		preferenceController.store(PreferenceController.PREFERENCE_LOGGED_IN_USER_ID, userId)
 
 	fun isLoginCompleted(): LiveData<Boolean> {
 		return loginCompleted
@@ -78,6 +89,8 @@ class LoginVM @ViewModelInject constructor(
 		super.onLoginResponse(authResponse)
 		ClientApp.printLog(TAG, "onLoginResponse:")
 		if (authResponse.responseCode == ResponseCode.OK) {
+			storeLoggedInUserId(authResponse.userId)
+			storeLoginCompleted()
 			loginCompleted.value = true
 		}
 	}

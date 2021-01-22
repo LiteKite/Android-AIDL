@@ -37,9 +37,6 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class SignupActivity : BaseActivity() {
 
-	private lateinit var signupBinding: ActivitySignupBinding
-	private val signupVM: SignupVM by viewModels()
-
 	companion object {
 
 		/**
@@ -56,6 +53,9 @@ class SignupActivity : BaseActivity() {
 		}
 
 	}
+
+	private lateinit var signupBinding: ActivitySignupBinding
+	private val signupVM: SignupVM by viewModels()
 
 	private val signupCompleteObserver = Observer<Boolean> { isCompleted ->
 		if (isCompleted) {

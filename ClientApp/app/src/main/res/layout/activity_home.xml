@@ -1,4 +1,5 @@
-<?xml version="1.0" encoding="utf-8"?><!--
+<?xml version="1.0" encoding="utf-8"?>
+<!--
    Copyright 2021 LiteKite Startup. All rights reserved.
 
    Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,6 +14,121 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 -->
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent" />
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".home.HomeActivity">
+
+    <data>
+
+        <variable
+            name="presenter"
+            type="com.litekite.client.home.HomeVM" />
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <include
+            android:id="@+id/tb_widget"
+            layout="@layout/widget_toolbar" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/tv_title_current_balance"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/layout_h_margin"
+            android:gravity="center_horizontal"
+            android:text="@string/current_balance"
+            android:textColor="@android:color/darker_gray"
+            android:textSize="@dimen/text_size_24"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toTopOf="@id/tv_current_balance"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tb_widget"
+            app:layout_constraintVertical_chainStyle="packed" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/tv_current_balance"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/layout_h_margin"
+            android:layout_marginTop="@dimen/home_tv_current_balance_margin_top"
+            android:gravity="center_horizontal"
+            android:maxLines="1"
+            android:textColor="@android:color/darker_gray"
+            android:textSize="@dimen/text_size_32"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toTopOf="@id/et_amount"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_title_current_balance"
+            tools:text="0.0" />
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/et_amount"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/edit_text_height"
+            android:layout_marginHorizontal="@dimen/layout_h_margin"
+            android:hint="@string/hint_enter_amount"
+            android:inputType="numberDecimal"
+            android:text="@={presenter.amount}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.4" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/b_deposit"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/button_height"
+            android:layout_marginHorizontal="@dimen/layout_h_margin"
+            android:layout_marginTop="@dimen/layout_fields_middle_margin"
+            android:onClick="@{(view) -> presenter.onClick(view)}"
+            android:text="@string/deposit"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            android:textSize="@dimen/text_size_18"
+            app:layout_constraintEnd_toStartOf="@+id/b_withdraw"
+            app:layout_constraintHorizontal_chainStyle="packed"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/et_amount" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/b_withdraw"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/button_height"
+            android:layout_marginTop="@dimen/layout_fields_middle_margin"
+            android:layout_marginEnd="@dimen/layout_h_margin"
+            android:layout_marginRight="@dimen/layout_h_margin"
+            android:onClick="@{(view) -> presenter.onClick(view)}"
+            android:text="@string/withdraw"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            android:textSize="@dimen/text_size_18"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/b_deposit"
+            app:layout_constraintTop_toBottomOf="@+id/et_amount" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/tv_welcome_note"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/layout_h_margin"
+            android:layout_marginTop="@dimen/layout_fields_middle_margin"
+            android:gravity="center_horizontal"
+            android:text="@string/welcome_note"
+            android:textColor="@android:color/darker_gray"
+            android:textSize="@dimen/text_size_18"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/b_withdraw" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>

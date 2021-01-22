@@ -17,6 +17,7 @@
 package com.litekite.client.di
 
 import android.content.Context
+import com.litekite.client.preference.PreferenceController
 import com.litekite.connector.controller.BankServiceController
 import dagger.Module
 import dagger.Provides
@@ -38,5 +39,10 @@ object AppComponents {
 	@Singleton
 	fun provideBankServiceController(@ApplicationContext context: Context) =
 		BankServiceController(context)
+
+	@Provides
+	@Singleton
+	fun providePreferenceController(@ApplicationContext context: Context) =
+		PreferenceController(context)
 
 }

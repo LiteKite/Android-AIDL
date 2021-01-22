@@ -1,4 +1,5 @@
-<?xml version="1.0" encoding="utf-8"?><!--
+<?xml version="1.0" encoding="utf-8"?>
+<!--
    Copyright 2021 LiteKite Startup. All rights reserved.
 
    Licensed under the Apache License, Version 2.0 (the "License");
@@ -29,12 +30,21 @@
     <string name="err_user_not_exists">User does not exists. Please sign up to
         create a new user!</string>
 
-    <!--Signup-->
+    <!--Sign up-->
     <string name="hint_confirm_password">Confirm Password</string>
     <string name="err_incorrect_confirm_password">Your password and confirm
         password are mismatching!</string>
     <string name="err_user_already_exists">User already exists. Please choose a
         different username or try login</string>
     <string name="sign_up_success">Sign up was successfully completed!</string>
+
+    <!--Home-->
+    <string name="home">i-Bank</string>
+    <string name="current_balance">Current Bal.</string>
+    <string name="hint_enter_amount">Enter an amount</string>
+    <string name="deposit">Deposit</string>
+    <string name="withdraw">Withdraw</string>
+    <string name="err_amount_empty">Please enter an amount!</string>
+    <string name="welcome_note">Welcome %s! Have a nice banking experience with AIDL</string>
 
 </resources>

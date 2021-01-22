@@ -20,30 +20,34 @@
     <dimen name="tool_bar_back_button_width">24dp</dimen>
     <dimen name="tool_bar_back_button_height">24dp</dimen>
     <dimen name="tool_bar_title_padding">5dp</dimen>
-    <dimen name="tool_bar_title_text_size">16sp</dimen>
 
-    <!--Login-->
-    <dimen name="layout_login_margin">30dp</dimen>
+    <!--Layout-->
+    <dimen name="layout_fields_middle_margin">20dp</dimen>
+    <dimen name="layout_line_separator_height">1dp</dimen>
+    <dimen name="layout_h_margin">30dp</dimen>
 
-    <dimen name="edit_text_username_height">64dp</dimen>
+    <!--Button-->
+    <dimen name="button_height">64dp</dimen>
 
-    <dimen name="edit_text_password_height">64dp</dimen>
-    <dimen name="edit_text_password_margin_top">20dp</dimen>
+    <!--Edit Text-->
+    <dimen name="edit_text_height">64dp</dimen>
 
-    <dimen name="button_login_height">64dp</dimen>
-    <dimen name="button_login_margin_top">20dp</dimen>
-    <dimen name="button_login_text_size">18sp</dimen>
-
-    <!--Signup-->
-    <dimen name="layout_signup_margin">30dp</dimen>
-
-    <dimen name="edit_text_confirm_password_height">64dp</dimen>
-
-    <dimen name="button_signup_height">64dp</dimen>
-    <dimen name="button_signup_margin_top">20dp</dimen>
-    <dimen name="button_signup_text_size">18sp</dimen>
+    <!--Text Sizes-->
+    <dimen name="text_size_18">18sp</dimen>
+    <dimen name="text_size_20">20sp</dimen>
+    <dimen name="text_size_24">24sp</dimen>
+    <dimen name="text_size_32">32sp</dimen>
 
     <!--Ripple Backgrounds-->
     <dimen name="bg_ripple_round_48">48dp</dimen>
+
+    <!--Login-->
+    <dimen name="login_tv_separator_margin_top">40dp</dimen>
+    <dimen name="login_tv_separator_h_padding">10dp</dimen>
+    <dimen name="login_tv_sign_up_margin_top">20dp</dimen>
+    <dimen name="login_tv_sign_up_padding">10dp</dimen>
+
+    <!--Home-->
+    <dimen name="home_tv_current_balance_margin_top">20dp</dimen>
 
 </resources>

@@ -19,16 +19,21 @@ package com.litekite.client.home
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.databinding.DataBindingUtil
 import com.litekite.client.R
 import com.litekite.client.base.BaseActivity
+import com.litekite.client.databinding.ActivityHomeBinding
+import dagger.hilt.android.AndroidEntryPoint
 
 /**
  * @author Vignesh S
  * @version 1.0, 21/01/2021
  * @since 1.0
  */
-class HomeActivity : AppCompatActivity() {
+@AndroidEntryPoint
+class HomeActivity : BaseActivity() {
 
 	companion object {
 
@@ -41,15 +46,30 @@ class HomeActivity : AppCompatActivity() {
 			if (context is AppCompatActivity) {
 				val intent = Intent(context, HomeActivity::class.java)
 				context.startActivity(intent)
-				BaseActivity.startActivityAnimation(context)
+				startActivityAnimation(context)
 			}
 		}
 
 	}
 
+	private lateinit var homeBinding: ActivityHomeBinding
+	private val homeVM: HomeVM by viewModels()
+
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
-		setContentView(R.layout.activity_home)
+		homeBinding = DataBindingUtil.setContentView(this, R.layout.activity_home)
+		init()
+	}
+
+	private fun init() {
+		setToolbar(
+			homeBinding.tbWidget.toolbar,
+			false,
+			getString(R.string.home),
+			homeBinding.tbWidget.tvToolbarTitle
+		)
+		homeBinding.presenter = homeVM
+		lifecycle.addObserver(homeVM)
 	}
 
 }

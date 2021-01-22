@@ -25,7 +25,9 @@ import com.litekite.client.app.ClientApp
 import com.litekite.client.base.BaseActivity
 import com.litekite.client.databinding.ActivityLoginBinding
 import com.litekite.client.home.HomeActivity
+import com.litekite.client.preference.PreferenceController
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 /**
  * @author Vignesh S
@@ -35,6 +37,12 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class LoginActivity : BaseActivity() {
 
+	companion object {
+		val TAG: String = LoginActivity::class.java.simpleName
+	}
+
+	@Inject
+	lateinit var preferenceController: PreferenceController
 	private lateinit var loginBinding: ActivityLoginBinding
 	private val loginVM: LoginVM by viewModels()
 
@@ -48,6 +56,12 @@ class LoginActivity : BaseActivity() {
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
+		if (loginVM.isLoginCompletedBefore()) {
+			ClientApp.printLog(TAG, "onCreate: already logged in. Going to Home!")
+			startHomeActivity()
+			finish()
+			return
+		}
 		loginBinding = DataBindingUtil.setContentView(this, R.layout.activity_login)
 		init()
 	}
