@@ -24,10 +24,7 @@ import android.os.IBinder
 import android.os.RemoteException
 import android.util.Log
 import com.litekite.connector.R
-import com.litekite.connector.entity.AuthResponse
-import com.litekite.connector.entity.FailureResponse
-import com.litekite.connector.entity.LoginRequest
-import com.litekite.connector.entity.SignupRequest
+import com.litekite.connector.entity.*
 
 /**
  * @author Vignesh S
@@ -40,7 +37,7 @@ class BankServiceConnector private constructor(private val context: Context) {
 		val TAG: String = BankServiceConnector::class.java.simpleName
 	}
 
-	private var serviceConnected = false
+	var serviceConnected = false
 	private var bankService: IBankService? = null
 	var callback: Callback? = null
 
@@ -55,6 +52,7 @@ class BankServiceConnector private constructor(private val context: Context) {
 			} catch (e: RemoteException) {
 				e.printStackTrace()
 			}
+			callback?.onBankServiceConnected()
 		}
 
 		override fun onServiceDisconnected(name: ComponentName?) {
@@ -73,6 +71,14 @@ class BankServiceConnector private constructor(private val context: Context) {
 
 		override fun onLoginResponse(authResponse: AuthResponse) {
 			callback?.onLoginResponse(authResponse)
+		}
+
+		override fun onUserDetailsResponse(userDetails: UserDetails) {
+			callback?.onUserDetailsResponse(userDetails)
+		}
+
+		override fun onCurrentBalanceChanged(currentBalance: Double) {
+			callback?.onCurrentBalanceChanged(currentBalance)
 		}
 
 		override fun onFailureResponse(failureResponse: FailureResponse) {
@@ -118,6 +124,42 @@ class BankServiceConnector private constructor(private val context: Context) {
 		}
 	}
 
+	fun userDetailsRequest(userId: Long) {
+		if (!serviceConnected) {
+			Log.d(TAG, "userDetailsRequest: service was not connected. Ignoring...")
+			return
+		}
+		try {
+			bankService?.userDetailsRequest(userId)
+		} catch (e: RemoteException) {
+			e.printStackTrace()
+		}
+	}
+
+	fun depositRequest(userId: Long, amount: Double) {
+		if (!serviceConnected) {
+			Log.d(TAG, "depositRequest: service was not connected. Ignoring...")
+			return
+		}
+		try {
+			bankService?.depositRequest(userId, amount)
+		} catch (e: RemoteException) {
+			e.printStackTrace()
+		}
+	}
+
+	fun withdrawRequest(userId: Long, amount: Double) {
+		if (!serviceConnected) {
+			Log.d(TAG, "withdrawRequest: service was not connected. Ignoring...")
+			return
+		}
+		try {
+			bankService?.withdrawRequest(userId, amount)
+		} catch (e: RemoteException) {
+			e.printStackTrace()
+		}
+	}
+
 	fun disconnectService() {
 		if (!serviceConnected) {
 			Log.d(TAG, "disconnectService: service was not connected. Ignoring...")
@@ -149,9 +191,15 @@ class BankServiceConnector private constructor(private val context: Context) {
 
 	interface Callback {
 
+		fun onBankServiceConnected() {}
+
 		fun onSignupResponse(authResponse: AuthResponse) {}
 
 		fun onLoginResponse(authResponse: AuthResponse) {}
+
+		fun onUserDetailsResponse(userDetails: UserDetails) {}
+
+		fun onCurrentBalanceChanged(currentBalance: Double) {}
 
 		fun onFailureResponse(failureResponse: FailureResponse)
 

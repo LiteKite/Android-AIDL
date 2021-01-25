@@ -32,6 +32,9 @@ import com.litekite.client.preference.PreferenceController
 import com.litekite.connector.controller.BankServiceConnector
 import com.litekite.connector.controller.BankServiceController
 import com.litekite.connector.entity.FailureResponse
+import com.litekite.connector.entity.RequestCode
+import com.litekite.connector.entity.ResponseCode
+import com.litekite.connector.entity.UserDetails
 
 /**
  * @author Vignesh S
@@ -48,7 +51,9 @@ class HomeVM @ViewModelInject constructor(
 		val TAG: String = HomeVM::class.java.simpleName
 	}
 
+	val balance: ObservableField<String> = ObservableField()
 	val amount: ObservableField<String> = ObservableField()
+	val welcomeNote: ObservableField<String> = ObservableField()
 
 	fun onClick(v: View) {
 		when (v.id) {
@@ -60,6 +65,11 @@ class HomeVM @ViewModelInject constructor(
 					)
 					return
 				}
+				val amount = amount.get() ?: "0.0"
+				bankServiceController.depositRequest(
+					getBankAccUserId(),
+					amount.toDouble()
+				)
 			}
 			R.id.b_withdraw -> {
 				if (TextUtils.isEmpty(amount.get())) {
@@ -69,17 +79,77 @@ class HomeVM @ViewModelInject constructor(
 					)
 					return
 				}
+				val amount = amount.get() ?: "0.0"
+				bankServiceController.withdrawRequest(
+					getBankAccUserId(),
+					amount.toDouble()
+				)
 			}
 		}
 	}
 
+	private fun getBankAccUserId(): Long =
+		preferenceController.getLong(PreferenceController.PREFERENCE_LOGGED_IN_USER_ID)
+
+	private fun updateCurrentBalance(currentBalance: Double) =
+		balance.set(String.format("%.2f", currentBalance))
+
+	private fun clearAmount() = amount.set("")
+
+	override fun onBankServiceConnected() {
+		ClientApp.printLog(TAG, "onBankServiceConnected:")
+		bankServiceController.userDetailsRequest(getBankAccUserId())
+	}
+
+	override fun onUserDetailsResponse(userDetails: UserDetails) {
+		ClientApp.printLog(TAG, "onUserDetailsResponse:")
+		updateCurrentBalance(userDetails.balance)
+		welcomeNote.set(
+			(getApplication() as ClientApp).getString(R.string.welcome_note, userDetails.username)
+		)
+	}
+
+	override fun onCurrentBalanceChanged(currentBalance: Double) {
+		ClientApp.printLog(TAG, "onCurrentBalanceChanged:")
+		clearAmount()
+		updateCurrentBalance(currentBalance)
+	}
+
 	override fun onFailureResponse(failureResponse: FailureResponse) {
 		ClientApp.printLog(TAG, "failureResponse: ${failureResponse.responseCode}")
+		clearAmount()
+		if (failureResponse.requestCode == RequestCode.WITHDRAWAL
+			|| failureResponse.requestCode == RequestCode.DEPOSIT
+		) {
+			when (failureResponse.responseCode) {
+				ResponseCode.ERROR_USER_NOT_FOUND -> {
+					ClientApp.showToast(
+						getApplication() as ClientApp,
+						(getApplication() as ClientApp).getString(R.string.err_user_not_found)
+					)
+				}
+				ResponseCode.ERROR_WITHDRAWAL_CURRENT_BALANCE_IS_ZERO -> {
+					ClientApp.showToast(
+						getApplication() as ClientApp,
+						(getApplication() as ClientApp).getString(R.string.err_withdrawal_balance_is_zero)
+					)
+				}
+				ResponseCode.ERROR_WITHDRAWAL_AMOUNT_EXCEEDS_CURRENT_BALANCE -> {
+					ClientApp.showToast(
+						getApplication() as ClientApp,
+						(getApplication() as ClientApp).getString(R.string.err_withdrawal_amount_exceeds)
+					)
+				}
+			}
+		}
 	}
 
 	@OnLifecycleEvent(Lifecycle.Event.ON_CREATE)
 	fun onCreate() {
 		bankServiceController.addCallback(this)
+		if (bankServiceController.isServiceConnected()) {
+			bankServiceController.userDetailsRequest(getBankAccUserId())
+		}
 	}
 
 	@OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)

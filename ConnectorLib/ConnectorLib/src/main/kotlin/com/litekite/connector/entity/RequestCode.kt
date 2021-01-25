@@ -26,8 +26,11 @@ package com.litekite.connector.entity
 annotation class RequestCode {
 
 	companion object {
-		var LOGIN = 0
-		var SIGNUP = 1
+		const val LOGIN = 0
+		const val SIGNUP = 1
+		const val USER_DETAILS_REQ = 2
+		const val DEPOSIT = 3
+		const val WITHDRAWAL = 4
 	}
 
 }

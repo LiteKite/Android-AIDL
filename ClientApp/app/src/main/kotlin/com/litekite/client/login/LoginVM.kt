@@ -108,7 +108,7 @@ class LoginVM @ViewModelInject constructor(
 				ResponseCode.ERROR_LOG_IN_USER_NOT_EXISTS -> {
 					ClientApp.showToast(
 						getApplication() as ClientApp,
-						(getApplication() as ClientApp).getString(R.string.err_user_not_exists)
+						(getApplication() as ClientApp).getString(R.string.err_login_user_not_exists)
 					)
 				}
 			}

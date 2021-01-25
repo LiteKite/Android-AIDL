@@ -27,8 +27,8 @@
     <string name="login_success">Login was successful!</string>
     <string name="err_all_fields_are_empty">Please fill all the fields</string>
     <string name="err_incorrect_username_or_password">Incorrect username or password</string>
-    <string name="err_user_not_exists">User does not exists. Please sign up to
-        create a new user!</string>
+    <string name="err_login_user_not_exists">User does not exists. Please sign up to create a new
+        user!</string>
 
     <!--Sign up-->
     <string name="hint_confirm_password">Confirm Password</string>
@@ -46,5 +46,10 @@
     <string name="withdraw">Withdraw</string>
     <string name="err_amount_empty">Please enter an amount!</string>
     <string name="welcome_note">Welcome %s! Have a nice banking experience with AIDL</string>
+    <string name="err_user_not_found">Failure!, User does not found!.</string>
+    <string name="err_withdrawal_balance_is_zero">Withdrawal Failed!, Current Balance is
+        zero.</string>
+    <string name="err_withdrawal_amount_exceeds">Withdrawal Failed!, Withdrawal Amount
+        exceeds Current Balance limit.</string>
 
 </resources>

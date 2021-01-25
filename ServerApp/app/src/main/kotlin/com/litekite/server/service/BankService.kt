@@ -162,6 +162,105 @@ class BankService : Service() {
 			}
 		}
 
+		override fun userDetailsRequest(userId: Long) {
+			val userAccount = BankDatabase.getBankDatabase(this@BankService)
+				.bankDao
+				.getUserAccount(userId)
+			if (userAccount != null) {
+				remoteBroadcast { index ->
+					bankServiceCallbacks.getBroadcastItem(index).onUserDetailsResponse(
+						UserDetails(userAccount.username, userAccount.balance)
+					)
+				}
+			} else {
+				remoteBroadcast { index ->
+					bankServiceCallbacks.getBroadcastItem(index).onFailureResponse(
+						FailureResponse(
+							RequestCode.USER_DETAILS_REQ,
+							ResponseCode.ERROR_USER_NOT_FOUND
+						)
+					)
+				}
+			}
+		}
+
+		override fun depositRequest(userId: Long, amount: Double) {
+			val userAccount = BankDatabase.getBankDatabase(this@BankService)
+				.bankDao
+				.getUserAccount(userId)
+			if (userAccount != null) {
+				userAccount.balance += amount
+				val response = BankDatabase.getBankDatabase(this@BankService)
+					.bankDao
+					.updateUserAccount(userAccount)
+				Log.d(TAG, "depositRequest currentBalance: $response")
+				remoteBroadcast { index ->
+					bankServiceCallbacks.getBroadcastItem(index).onCurrentBalanceChanged(
+						userAccount.balance
+					)
+				}
+			} else {
+				remoteBroadcast { index ->
+					bankServiceCallbacks.getBroadcastItem(index).onFailureResponse(
+						FailureResponse(
+							RequestCode.DEPOSIT,
+							ResponseCode.ERROR_USER_NOT_FOUND
+						)
+					)
+				}
+			}
+		}
+
+		override fun withdrawRequest(userId: Long, amount: Double) {
+			val userAccount = BankDatabase.getBankDatabase(this@BankService)
+				.bankDao
+				.getUserAccount(userId)
+			if (userAccount != null) {
+				if (userAccount.balance == 0.0) {
+					remoteBroadcast { index ->
+						bankServiceCallbacks.getBroadcastItem(index).onFailureResponse(
+							FailureResponse(
+								RequestCode.WITHDRAWAL,
+								ResponseCode.ERROR_WITHDRAWAL_CURRENT_BALANCE_IS_ZERO
+							)
+						)
+					}
+					return
+				}
+				userAccount.balance -= amount
+				if (userAccount.balance < 0) {
+					remoteBroadcast { index ->
+						bankServiceCallbacks.getBroadcastItem(index).onFailureResponse(
+							FailureResponse(
+								RequestCode.WITHDRAWAL,
+								ResponseCode.ERROR_WITHDRAWAL_AMOUNT_EXCEEDS_CURRENT_BALANCE
+							)
+						)
+					}
+					return
+				}
+				val noOfRowsUpdated = BankDatabase.getBankDatabase(this@BankService)
+					.bankDao
+					.updateUserAccount(userAccount)
+				if (noOfRowsUpdated == BankDatabase.ONE_ROW_UPDATED) {
+					remoteBroadcast { index ->
+						bankServiceCallbacks.getBroadcastItem(index).onCurrentBalanceChanged(
+							userAccount.balance
+						)
+					}
+				}
+			} else {
+				remoteBroadcast { index ->
+					bankServiceCallbacks.getBroadcastItem(index).onFailureResponse(
+						FailureResponse(
+							RequestCode.WITHDRAWAL,
+							ResponseCode.ERROR_USER_NOT_FOUND
+						)
+					)
+				}
+			}
+		}
+
 		private fun remoteBroadcast(block: (Int) -> Unit) {
 			val count = bankServiceCallbacks.beginBroadcast()
 			for (index in 0 until count) {

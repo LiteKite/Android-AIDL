@@ -16,10 +16,7 @@
 
 package com.litekite.server.room.dao
 
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
-import androidx.room.Query
+import androidx.room.*
 import com.litekite.server.room.entity.UserAccount
 
 /**
@@ -35,6 +32,12 @@ interface BankDao {
 
 	@Query("select * from user_account where username = :username AND password = :password")
 	fun getUserAccount(username: String, password: String): UserAccount?
+
+	@Query("select * from user_account where user_id = :userId")
+	fun getUserAccount(userId: Long): UserAccount?
+
+	@Update(onConflict = OnConflictStrategy.REPLACE)
+	fun updateUserAccount(userAccount: UserAccount) : Int
 
 	@Insert(onConflict = OnConflictStrategy.REPLACE)
 	fun saveUserAccount(userAccount: UserAccount) : Long

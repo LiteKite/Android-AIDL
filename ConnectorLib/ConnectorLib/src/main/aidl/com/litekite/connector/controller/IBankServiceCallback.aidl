@@ -19,6 +19,7 @@ package com.litekite.connector.controller;
 
 // Declare any non-default types here with import statements
 import com.litekite.connector.entity.AuthResponse;
+import com.litekite.connector.entity.UserDetails;
 import com.litekite.connector.entity.FailureResponse;
 
 /**
@@ -41,6 +42,16 @@ interface IBankServiceCallback {
      * Called upon the login request process.
      */
     void onLoginResponse(in AuthResponse authResponse);
+
+    /**
+     * Called upon the signup request process.
+     */
+    void onUserDetailsResponse(in UserDetails userDetails);
+
+    /**
+     * Called upon the signup request process.
+     */
+    void onCurrentBalanceChanged(double currentBalance);
 
     /**
      * Called upon any failure occurs with request process.

@@ -18,10 +18,7 @@ package com.litekite.connector.controller
 
 import android.content.Context
 import com.litekite.connector.base.CallbackProvider
-import com.litekite.connector.entity.AuthResponse
-import com.litekite.connector.entity.FailureResponse
-import com.litekite.connector.entity.LoginRequest
-import com.litekite.connector.entity.SignupRequest
+import com.litekite.connector.entity.*
 
 /**
  * @author Vignesh S
@@ -56,6 +53,8 @@ class BankServiceController(context: Context) : BankServiceConnector.Callback,
 		serviceProvider.connectService()
 	}
 
+	fun isServiceConnected() = serviceProvider.serviceConnected
+
 	private fun disconnect() {
 		serviceProvider.disconnectService()
 	}
@@ -70,12 +69,36 @@ class BankServiceController(context: Context) : BankServiceConnector.Callback,
 		serviceProvider.loginRequest(loginRequest)
 	}
 
+	fun depositRequest(userId: Long, amount: Double) {
+		serviceProvider.depositRequest(userId, amount)
+	}
+
+	fun withdrawRequest(userId: Long, amount: Double) {
+		serviceProvider.withdrawRequest(userId, amount)
+	}
+
+	fun userDetailsRequest(userId: Long) {
+		serviceProvider.userDetailsRequest(userId)
+	}
+
+	override fun onBankServiceConnected() {
+		callbacks.forEach { it.onBankServiceConnected() }
+	}
+
 	override fun onSignupResponse(authResponse: AuthResponse) {
 		callbacks.forEach { it.onSignupResponse(authResponse) }
 	}
 
 	override fun onLoginResponse(authResponse: AuthResponse) {
 		callbacks.forEach { it.onLoginResponse(authResponse) }
+	}
+
+	override fun onUserDetailsResponse(userDetails: UserDetails) {
+		callbacks.forEach { it.onUserDetailsResponse(userDetails) }
+	}
+
+	override fun onCurrentBalanceChanged(currentBalance: Double) {
+		callbacks.forEach { it.onCurrentBalanceChanged(currentBalance) }
 	}
 
 	override fun onFailureResponse(failureResponse: FailureResponse) {

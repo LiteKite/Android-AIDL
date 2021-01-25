@@ -40,6 +40,8 @@ abstract class BankDatabase : RoomDatabase() {
 
 	companion object {
 
+		const val ONE_ROW_UPDATED: Int = 1
+
 		private const val DATABASE_NAME = "bank_database"
 		private var bankDatabaseInstance: BankDatabase? = null
 

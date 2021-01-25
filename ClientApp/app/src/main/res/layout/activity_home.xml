@@ -57,16 +57,17 @@
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="@dimen/layout_h_margin"
             android:layout_marginTop="@dimen/home_tv_current_balance_margin_top"
+            android:ellipsize="end"
             android:gravity="center_horizontal"
-            android:maxLines="1"
+            android:maxLines="2"
+            android:text="@={presenter.balance, default=0.0}"
             android:textColor="@android:color/darker_gray"
             android:textSize="@dimen/text_size_32"
             android:textStyle="bold"
             app:layout_constraintBottom_toTopOf="@id/et_amount"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tv_title_current_balance"
-            tools:text="0.0" />
+            app:layout_constraintTop_toBottomOf="@id/tv_title_current_balance" />
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/et_amount"
@@ -121,7 +122,7 @@
             android:layout_marginHorizontal="@dimen/layout_h_margin"
             android:layout_marginTop="@dimen/layout_fields_middle_margin"
             android:gravity="center_horizontal"
-            android:text="@string/welcome_note"
+            android:text="@={presenter.welcomeNote, default=@string/welcome_note}"
             android:textColor="@android:color/darker_gray"
             android:textSize="@dimen/text_size_18"
             android:textStyle="bold"

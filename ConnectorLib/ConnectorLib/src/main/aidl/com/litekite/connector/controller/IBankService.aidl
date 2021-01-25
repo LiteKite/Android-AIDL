@@ -54,4 +54,19 @@ interface IBankService {
      */
     void loginRequest(in LoginRequest loginRequest);
 
+    /**
+     * Called upon the user details request process.
+     */
+    void userDetailsRequest(long userId);
+
+    /**
+     * Called upon the user deposit request process.
+     */
+    void depositRequest(long userId, double amount);
+
+    /**
+     * Called upon the user withdrawal request process.
+     */
+    void withdrawRequest(long userId, double amount);
+
 }
