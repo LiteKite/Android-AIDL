@@ -17,6 +17,7 @@
 package com.litekite.client.base
 
 import android.content.Context
+import android.view.Menu
 import android.view.View
 import android.widget.TextView
 import androidx.annotation.StringRes
@@ -90,5 +91,16 @@ open class BaseActivity : AppCompatActivity() {
 		super.onBackPressed()
 		overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right)
 	}
+
+	override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+		return if (getToolbarMenuResource() == 0) {
+			super.onCreateOptionsMenu(menu)
+		} else {
+			menuInflater.inflate(getToolbarMenuResource(), menu)
+			true
+		}
+	}
+
+	open fun getToolbarMenuResource(): Int = 0
 
 }

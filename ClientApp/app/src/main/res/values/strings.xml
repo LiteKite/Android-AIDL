@@ -52,4 +52,7 @@
     <string name="err_withdrawal_amount_exceeds">Withdrawal Failed!, Withdrawal Amount
         exceeds Current Balance limit.</string>
 
+    <!--Home Menu-->
+    <string name="logout">Logout</string>
+
 </resources>

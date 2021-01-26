@@ -22,7 +22,14 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="popupMenuStyle">@style/PopupMenuStyle</item>
         <item name="android:windowBackground">@color/windowBackground</item>
+    </style>
+
+    <style name="PopupMenuStyle" parent="Widget.MaterialComponents.PopupMenu">
+        <item name="android:textColor">@color/colorAccent</item>
+        <item name="overlapAnchor">true</item>
+        <item name="popupMenuBackground">@color/windowBackground</item>
     </style>
 
 </resources>

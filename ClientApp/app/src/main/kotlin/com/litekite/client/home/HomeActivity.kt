@@ -19,6 +19,7 @@ package com.litekite.client.home
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.view.MenuItem
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
@@ -70,6 +71,12 @@ class HomeActivity : BaseActivity() {
 		)
 		homeBinding.presenter = homeVM
 		lifecycle.addObserver(homeVM)
+	}
+
+	override fun getToolbarMenuResource() = R.menu.home_menu
+
+	override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+		return homeVM.onOptionsItemSelected(this, item)
 	}
 
 }

@@ -16,8 +16,11 @@
 
 package com.litekite.client.login
 
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.viewModels
+import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import com.litekite.client.R
@@ -38,7 +41,22 @@ import javax.inject.Inject
 class LoginActivity : BaseActivity() {
 
 	companion object {
+
 		val TAG: String = LoginActivity::class.java.simpleName
+
+		/**
+		 * Launches LoginActivity.
+		 *
+		 * @param context An Activity Context.
+		 */
+		fun start(context: Context) {
+			if (context is AppCompatActivity) {
+				val intent = Intent(context, LoginActivity::class.java)
+				context.startActivity(intent)
+				startActivityAnimation(context)
+			}
+		}
+
 	}
 
 	@Inject

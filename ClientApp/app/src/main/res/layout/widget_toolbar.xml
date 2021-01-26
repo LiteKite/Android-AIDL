@@ -20,14 +20,14 @@
     android:layout_width="match_parent"
     android:layout_height="?attr/actionBarSize"
     android:background="@color/colorPrimary"
-    android:theme="@style/ThemeOverlay.AppCompat.Light">
+    android:theme="@style/Theme.MaterialComponents">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layout_scrollFlags="enterAlways"
-        app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
+        app:popupTheme="@style/PopupMenuStyle"
+        app:layout_scrollFlags="enterAlways">
 
         <TextView
             android:id="@+id/tv_toolbar_title"

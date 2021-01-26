@@ -18,6 +18,7 @@ package com.litekite.client.home
 
 import android.app.Application
 import android.text.TextUtils
+import android.view.MenuItem
 import android.view.View
 import androidx.databinding.ObservableField
 import androidx.hilt.lifecycle.ViewModelInject
@@ -28,6 +29,7 @@ import androidx.lifecycle.OnLifecycleEvent
 import com.litekite.client.R
 import com.litekite.client.app.ClientApp
 import com.litekite.client.base.BaseActivity
+import com.litekite.client.login.LoginActivity
 import com.litekite.client.preference.PreferenceController
 import com.litekite.connector.controller.BankServiceConnector
 import com.litekite.connector.controller.BankServiceController
@@ -87,6 +89,9 @@ class HomeVM @ViewModelInject constructor(
 			}
 		}
 	}
+
+	private fun resetLoginCompleted() =
+		preferenceController.store(PreferenceController.PREFERENCE_LOGIN_COMPLETE_STATE, false)
 
 	private fun getBankAccUserId(): Long =
 		preferenceController.getLong(PreferenceController.PREFERENCE_LOGGED_IN_USER_ID)
@@ -155,6 +160,18 @@ class HomeVM @ViewModelInject constructor(
 	@OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
 	fun onDestroy() {
 		bankServiceController.removeCallback(this)
+	}
+
+	fun onOptionsItemSelected(activity: BaseActivity, item: MenuItem?): Boolean {
+		return when (item?.itemId) {
+			R.id.logout -> {
+				resetLoginCompleted()
+				LoginActivity.start(activity)
+				activity.finish()
+				true
+			}
+			else -> activity.onOptionsItemSelected(item)
+		}
 	}
 
 }
