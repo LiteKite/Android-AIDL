@@ -18,9 +18,7 @@ package com.litekite.server.service
 
 import android.app.Service
 import android.content.Intent
-import android.os.Binder
-import android.os.IBinder
-import android.os.RemoteCallbackList
+import android.os.*
 import android.util.Log
 import com.litekite.connector.controller.IBankService
 import com.litekite.connector.controller.IBankServiceCallback
@@ -28,6 +26,9 @@ import com.litekite.connector.entity.*
 import com.litekite.server.R
 import com.litekite.server.room.db.BankDatabase
 import com.litekite.server.room.entity.UserAccount
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.util.*
 
 /**
@@ -42,9 +43,15 @@ class BankService : Service() {
 	}
 
 	/**
+	 * A coroutines scope that holds all the coroutine works.
+	 */
+	private val coroutineScope = CoroutineScope(Dispatchers.IO)
+
+	/**
 	 * This is a list of callbacks that have been registered with the service.
 	 */
-	val bankServiceCallbacks: RemoteCallbackList<IBankServiceCallback> = RemoteCallbackList()
+	private val bankServiceCallbacks: RemoteCallbackList<IBankServiceCallback> =
+		RemoteCallbackList()
 
 	override fun onCreate() {
 		super.onCreate()
@@ -70,6 +77,7 @@ class BankService : Service() {
 	override fun onDestroy() {
 		super.onDestroy()
 		bankServiceCallbacks.kill()
+		BankDatabase.destroyAppDatabase()
 	}
 
 	override fun onLowMemory() {
@@ -81,7 +89,7 @@ class BankService : Service() {
 
 		override fun registerCallback(cb: IBankServiceCallback?) {
 			if (cb != null) {
-				bankServiceCallbacks.register(cb, this)
+				bankServiceCallbacks.register(cb, this@BankBinder)
 			}
 		}
 
@@ -95,26 +103,24 @@ class BankService : Service() {
 			if (signupRequest == null) {
 				return
 			}
-			val isUserExists = BankDatabase.getBankDatabase(this@BankService)
-				.bankDao
-				.isUserAccountExists(signupRequest.username)
-			if (isUserExists) {
-				remoteBroadcast { index ->
-					bankServiceCallbacks.getBroadcastItem(index).onFailureResponse(
-						FailureResponse(RequestCode.SIGNUP, ResponseCode.ERROR_SIGN_UP_USER_EXISTS)
-					)
-				}
-			} else {
-				val userAccount = UserAccount(
-					username = signupRequest.username,
-					password = signupRequest.password
+			coroutineScope.launch {
+				val isUserExists = BankDatabase.isUserExists(
+					this@BankService,
+					signupRequest.username
 				)
-				val userId = BankDatabase.getBankDatabase(this@BankService)
-					.bankDao.saveUserAccount(userAccount)
-				remoteBroadcast { index ->
-					bankServiceCallbacks.getBroadcastItem(index).onSignupResponse(
-						AuthResponse(ResponseCode.OK, userId, userAccount.username)
+				if (isUserExists) {
+					postFailureResponse(RequestCode.SIGNUP, ResponseCode.ERROR_SIGN_UP_USER_EXISTS)
+				} else {
+					val userAccount = UserAccount(
+						username = signupRequest.username,
+						password = signupRequest.password
 					)
+					val userId = BankDatabase.saveUserAccount(this@BankService, userAccount)
+					remoteBroadcast { index ->
+						bankServiceCallbacks.getBroadcastItem(index).onSignupResponse(
+							AuthResponse(ResponseCode.OK, userId, userAccount.username)
+						)
+					}
 				}
 			}
 		}
@@ -123,148 +129,133 @@ class BankService : Service() {
 			if (loginRequest == null) {
 				return
 			}
-			val isUserExists = BankDatabase.getBankDatabase(this@BankService)
-				.bankDao
-				.isUserAccountExists(loginRequest.username)
-			if (!isUserExists) {
-				remoteBroadcast { index ->
-					bankServiceCallbacks.getBroadcastItem(index).onFailureResponse(
-						FailureResponse(
-							RequestCode.LOGIN,
-							ResponseCode.ERROR_LOG_IN_USER_NOT_EXISTS
-						)
+			coroutineScope.launch {
+				val isUserExists = BankDatabase.isUserExists(
+					this@BankService,
+					loginRequest.username
+				)
+				if (!isUserExists) {
+					postFailureResponse(
+						RequestCode.LOGIN,
+						ResponseCode.ERROR_LOG_IN_USER_NOT_EXISTS
 					)
-				}
-			} else {
-				val userAccount = BankDatabase.getBankDatabase(this@BankService)
-					.bankDao
-					.getUserAccount(loginRequest.username, loginRequest.password)
-				if (userAccount == null) {
-					remoteBroadcast { index ->
-						bankServiceCallbacks.getBroadcastItem(index).onFailureResponse(
-							FailureResponse(
-								RequestCode.LOGIN,
-								ResponseCode.ERROR_LOG_IN_INCORRECT_USER_NAME_OR_PASSWORD
-							)
-						)
-					}
 				} else {
-					remoteBroadcast { index ->
-						bankServiceCallbacks.getBroadcastItem(index).onLoginResponse(
-							AuthResponse(
-								ResponseCode.OK,
-								userAccount.userId,
-								userAccount.username
-							)
+					val userAccount = BankDatabase.getUserAccount(
+						this@BankService,
+						loginRequest.username,
+						loginRequest.password
+					)
+					if (userAccount == null) {
+						postFailureResponse(
+							RequestCode.LOGIN,
+							ResponseCode.ERROR_LOG_IN_INCORRECT_USER_NAME_OR_PASSWORD
 						)
+					} else {
+						remoteBroadcast { index ->
+							bankServiceCallbacks.getBroadcastItem(index).onLoginResponse(
+								AuthResponse(
+									ResponseCode.OK,
+									userAccount.userId,
+									userAccount.username
+								)
+							)
+						}
 					}
 				}
 			}
 		}
 
 		override fun userDetailsRequest(userId: Long) {
-			val userAccount = BankDatabase.getBankDatabase(this@BankService)
-				.bankDao
-				.getUserAccount(userId)
-			if (userAccount != null) {
-				remoteBroadcast { index ->
-					bankServiceCallbacks.getBroadcastItem(index).onUserDetailsResponse(
-						UserDetails(userAccount.username, userAccount.balance)
-					)
-				}
-			} else {
-				remoteBroadcast { index ->
-					bankServiceCallbacks.getBroadcastItem(index).onFailureResponse(
-						FailureResponse(
-							RequestCode.USER_DETAILS_REQ,
-							ResponseCode.ERROR_USER_NOT_FOUND
+			coroutineScope.launch {
+				val userAccount = BankDatabase.getUserAccount(this@BankService, userId)
+				if (userAccount != null) {
+					remoteBroadcast { index ->
+						bankServiceCallbacks.getBroadcastItem(index).onUserDetailsResponse(
+							UserDetails(userAccount.username, userAccount.balance)
 						)
+					}
+				} else {
+					postFailureResponse(
+						RequestCode.USER_DETAILS_REQ,
+						ResponseCode.ERROR_USER_NOT_FOUND
 					)
 				}
 			}
 		}
 
 		override fun depositRequest(userId: Long, amount: Double) {
-			val userAccount = BankDatabase.getBankDatabase(this@BankService)
-				.bankDao
-				.getUserAccount(userId)
-			if (userAccount != null) {
-				userAccount.balance += amount
-				val response = BankDatabase.getBankDatabase(this@BankService)
-					.bankDao
-					.updateUserAccount(userAccount)
-				Log.d(TAG, "depositRequest currentBalance: $response")
-				remoteBroadcast { index ->
-					bankServiceCallbacks.getBroadcastItem(index).onCurrentBalanceChanged(
-						userAccount.balance
+			coroutineScope.launch {
+				val userAccount = BankDatabase.getUserAccount(this@BankService, userId)
+				if (userAccount != null) {
+					userAccount.balance += amount
+					val noOfRowsUpdated = BankDatabase.updateUserAccount(
+						this@BankService,
+						userAccount
 					)
-				}
-			} else {
-				remoteBroadcast { index ->
-					bankServiceCallbacks.getBroadcastItem(index).onFailureResponse(
-						FailureResponse(
-							RequestCode.DEPOSIT,
-							ResponseCode.ERROR_USER_NOT_FOUND
-						)
-					)
+					if (noOfRowsUpdated == BankDatabase.ONE_ROW_UPDATED) {
+						postCurrentBalanceChanged(userAccount.balance)
+					}
+				} else {
+					postFailureResponse(RequestCode.DEPOSIT, ResponseCode.ERROR_USER_NOT_FOUND)
 				}
 			}
 		}
 
 		override fun withdrawRequest(userId: Long, amount: Double) {
-			val userAccount = BankDatabase.getBankDatabase(this@BankService)
-				.bankDao
-				.getUserAccount(userId)
-			if (userAccount != null) {
-				if (userAccount.balance == 0.0) {
-					remoteBroadcast { index ->
-						bankServiceCallbacks.getBroadcastItem(index).onFailureResponse(
-							FailureResponse(
-								RequestCode.WITHDRAWAL,
-								ResponseCode.ERROR_WITHDRAWAL_CURRENT_BALANCE_IS_ZERO
-							)
-						)
-					}
-					return
-				}
-				userAccount.balance -= amount
-				if (userAccount.balance < 0) {
-					remoteBroadcast { index ->
-						bankServiceCallbacks.getBroadcastItem(index).onFailureResponse(
-							FailureResponse(
-								RequestCode.WITHDRAWAL,
-								ResponseCode.ERROR_WITHDRAWAL_AMOUNT_EXCEEDS_CURRENT_BALANCE
-							)
-						)
-					}
-					return
-				}
-				val noOfRowsUpdated = BankDatabase.getBankDatabase(this@BankService)
-					.bankDao
-					.updateUserAccount(userAccount)
-				if (noOfRowsUpdated == BankDatabase.ONE_ROW_UPDATED) {
-					remoteBroadcast { index ->
-						bankServiceCallbacks.getBroadcastItem(index).onCurrentBalanceChanged(
-							userAccount.balance
-						)
-					}
-				}
-			} else {
-				remoteBroadcast { index ->
-					bankServiceCallbacks.getBroadcastItem(index).onFailureResponse(
-						FailureResponse(
+			coroutineScope.launch {
+				val userAccount = BankDatabase.getUserAccount(this@BankService, userId)
+				if (userAccount != null) {
+					if (userAccount.balance == 0.0) {
+						postFailureResponse(
 							RequestCode.WITHDRAWAL,
-							ResponseCode.ERROR_USER_NOT_FOUND
+							ResponseCode.ERROR_WITHDRAWAL_CURRENT_BALANCE_IS_ZERO
 						)
+						return@launch
+					}
+					userAccount.balance -= amount
+					if (userAccount.balance < 0) {
+						postFailureResponse(
+							RequestCode.WITHDRAWAL,
+							ResponseCode.ERROR_WITHDRAWAL_AMOUNT_EXCEEDS_CURRENT_BALANCE
+						)
+						return@launch
+					}
+					val noOfRowsUpdated = BankDatabase.updateUserAccount(
+						this@BankService,
+						userAccount
 					)
+					if (noOfRowsUpdated == BankDatabase.ONE_ROW_UPDATED) {
+						postCurrentBalanceChanged(userAccount.balance)
+					}
+				} else {
+					postFailureResponse(RequestCode.WITHDRAWAL, ResponseCode.ERROR_USER_NOT_FOUND)
 				}
+			}
+		}
+
+		private fun postFailureResponse(
+			@RequestCode requestCode: Int,
+			@ResponseCode responseCode: Int
+		) {
+			remoteBroadcast { index ->
+				bankServiceCallbacks.getBroadcastItem(index).onFailureResponse(
+					FailureResponse(requestCode, responseCode)
+				)
+			}
+		}
+
+		private fun postCurrentBalanceChanged(currentBalance: Double) {
+			remoteBroadcast { index ->
+				bankServiceCallbacks.getBroadcastItem(index).onCurrentBalanceChanged(
+					currentBalance
+				)
 			}
 		}
 
 		private fun remoteBroadcast(block: (Int) -> Unit) {
 			val count = bankServiceCallbacks.beginBroadcast()
 			for (index in 0 until count) {
-				if (bankServiceCallbacks.getBroadcastCookie(index) == this) {
+				if (bankServiceCallbacks.getBroadcastCookie(index) == this@BankBinder) {
 					block.invoke(index)
 					break
 				}

@@ -49,10 +49,11 @@ class LoginVM @ViewModelInject constructor(
 		val TAG: String = LoginVM::class.java.simpleName
 	}
 
-	private val loginCompleted: MutableLiveData<Boolean> = MutableLiveData()
-
 	val username: ObservableField<String> = ObservableField()
 	val password: ObservableField<String> = ObservableField()
+
+	private val applicationContext = getApplication() as ClientApp
+	private val loginCompleted: MutableLiveData<Boolean> = MutableLiveData()
 
 	fun isLoginCompletedBefore() =
 		preferenceController.getBoolean(PreferenceController.PREFERENCE_LOGIN_COMPLETE_STATE)
@@ -63,9 +64,7 @@ class LoginVM @ViewModelInject constructor(
 	private fun storeLoggedInUserId(userId: Long) =
 		preferenceController.store(PreferenceController.PREFERENCE_LOGGED_IN_USER_ID, userId)
 
-	fun isLoginCompleted(): LiveData<Boolean> {
-		return loginCompleted
-	}
+	fun isLoginCompleted(): LiveData<Boolean> = loginCompleted
 
 	fun onClick(v: View) {
 		when (v.id) {
@@ -101,15 +100,12 @@ class LoginVM @ViewModelInject constructor(
 			when (failureResponse.responseCode) {
 				ResponseCode.ERROR_LOG_IN_INCORRECT_USER_NAME_OR_PASSWORD -> {
 					ClientApp.showToast(
-						getApplication() as ClientApp,
-						(getApplication() as ClientApp).getString(R.string.err_incorrect_username_or_password)
+						applicationContext,
+						R.string.err_incorrect_username_or_password
 					)
 				}
 				ResponseCode.ERROR_LOG_IN_USER_NOT_EXISTS -> {
-					ClientApp.showToast(
-						getApplication() as ClientApp,
-						(getApplication() as ClientApp).getString(R.string.err_login_user_not_exists)
-					)
+					ClientApp.showToast(applicationContext, R.string.err_login_user_not_exists)
 				}
 			}
 		}

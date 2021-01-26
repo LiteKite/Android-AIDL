@@ -28,18 +28,18 @@ import com.litekite.server.room.entity.UserAccount
 interface BankDao {
 
 	@Query("select exists(select * from user_account where username = :username)")
-	fun isUserAccountExists(username: String): Boolean
+	suspend fun isUserAccountExists(username: String): Boolean
 
 	@Query("select * from user_account where username = :username AND password = :password")
-	fun getUserAccount(username: String, password: String): UserAccount?
+	suspend fun getUserAccount(username: String, password: String): UserAccount?
 
 	@Query("select * from user_account where user_id = :userId")
-	fun getUserAccount(userId: Long): UserAccount?
+	suspend fun getUserAccount(userId: Long): UserAccount?
 
 	@Update(onConflict = OnConflictStrategy.REPLACE)
-	fun updateUserAccount(userAccount: UserAccount) : Int
+	suspend fun updateUserAccount(userAccount: UserAccount) : Int
 
 	@Insert(onConflict = OnConflictStrategy.REPLACE)
-	fun saveUserAccount(userAccount: UserAccount) : Long
+	suspend fun saveUserAccount(userAccount: UserAccount) : Long
 
 }

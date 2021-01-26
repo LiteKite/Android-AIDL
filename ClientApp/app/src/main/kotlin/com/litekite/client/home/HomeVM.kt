@@ -57,6 +57,8 @@ class HomeVM @ViewModelInject constructor(
 	val amount: ObservableField<String> = ObservableField()
 	val welcomeNote: ObservableField<String> = ObservableField()
 
+	private val applicationContext = getApplication() as ClientApp
+
 	fun onClick(v: View) {
 		when (v.id) {
 			R.id.b_deposit -> {
@@ -67,10 +69,9 @@ class HomeVM @ViewModelInject constructor(
 					)
 					return
 				}
-				val amount = amount.get() ?: "0.0"
 				bankServiceController.depositRequest(
 					getBankAccUserId(),
-					amount.toDouble()
+					"${amount.get()}".toDouble()
 				)
 			}
 			R.id.b_withdraw -> {
@@ -81,10 +82,9 @@ class HomeVM @ViewModelInject constructor(
 					)
 					return
 				}
-				val amount = amount.get() ?: "0.0"
 				bankServiceController.withdrawRequest(
 					getBankAccUserId(),
-					amount.toDouble()
+					"${amount.get()}".toDouble()
 				)
 			}
 		}
@@ -109,9 +109,7 @@ class HomeVM @ViewModelInject constructor(
 	override fun onUserDetailsResponse(userDetails: UserDetails) {
 		ClientApp.printLog(TAG, "onUserDetailsResponse:")
 		updateCurrentBalance(userDetails.balance)
-		welcomeNote.set(
-			(getApplication() as ClientApp).getString(R.string.welcome_note, userDetails.username)
-		)
+		welcomeNote.set(applicationContext.getString(R.string.welcome_note, userDetails.username))
 	}
 
 	override fun onCurrentBalanceChanged(currentBalance: Double) {
@@ -128,22 +126,13 @@ class HomeVM @ViewModelInject constructor(
 		) {
 			when (failureResponse.responseCode) {
 				ResponseCode.ERROR_USER_NOT_FOUND -> {
-					ClientApp.showToast(
-						getApplication() as ClientApp,
-						(getApplication() as ClientApp).getString(R.string.err_user_not_found)
-					)
+					ClientApp.showToast(applicationContext, R.string.err_user_not_found)
 				}
 				ResponseCode.ERROR_WITHDRAWAL_CURRENT_BALANCE_IS_ZERO -> {
-					ClientApp.showToast(
-						getApplication() as ClientApp,
-						(getApplication() as ClientApp).getString(R.string.err_withdrawal_balance_is_zero)
-					)
+					ClientApp.showToast(applicationContext, R.string.err_withdrawal_balance_is_zero)
 				}
 				ResponseCode.ERROR_WITHDRAWAL_AMOUNT_EXCEEDS_CURRENT_BALANCE -> {
-					ClientApp.showToast(
-						getApplication() as ClientApp,
-						(getApplication() as ClientApp).getString(R.string.err_withdrawal_amount_exceeds)
-					)
+					ClientApp.showToast(applicationContext, R.string.err_withdrawal_amount_exceeds)
 				}
 			}
 		}

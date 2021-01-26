@@ -22,6 +22,8 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.litekite.server.room.dao.BankDao
 import com.litekite.server.room.entity.UserAccount
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 /**
  * Database Class, Creates Database, Database Instance and destroys Database instance.
@@ -52,12 +54,57 @@ abstract class BankDatabase : RoomDatabase() {
 		 *
 		 * @return [bankDatabaseInstance]
 		 */
-		fun getBankDatabase(context: Context): BankDatabase {
+		private fun getBankDatabase(context: Context): BankDatabase {
 			if (bankDatabaseInstance == null) {
 				bankDatabaseInstance =
 					Room.databaseBuilder(context, BankDatabase::class.java, DATABASE_NAME).build()
 			}
 			return bankDatabaseInstance as BankDatabase
+		}
+
+		suspend fun isUserExists(context: Context, username: String): Boolean {
+			return withContext(Dispatchers.IO) {
+				getBankDatabase(context)
+					.bankDao
+					.isUserAccountExists(username)
+			}
+		}
+
+		suspend fun saveUserAccount(context: Context, userAccount: UserAccount): Long {
+			return withContext(Dispatchers.IO) {
+				getBankDatabase(context)
+					.bankDao
+					.saveUserAccount(userAccount)
+			}
+		}
+
+		@Synchronized
+		suspend fun updateUserAccount(context: Context, userAccount: UserAccount): Int {
+			return withContext(Dispatchers.IO) {
+				getBankDatabase(context)
+					.bankDao
+					.updateUserAccount(userAccount)
+			}
+		}
+
+		suspend fun getUserAccount(
+			context: Context,
+			username: String,
+			password: String
+		): UserAccount? {
+			return withContext(Dispatchers.IO) {
+				getBankDatabase(context)
+					.bankDao
+					.getUserAccount(username, password)
+			}
+		}
+
+		suspend fun getUserAccount(context: Context, userId: Long): UserAccount? {
+			return withContext(Dispatchers.IO) {
+				getBankDatabase(context)
+					.bankDao
+					.getUserAccount(userId)
+			}
 		}
 
 		/**

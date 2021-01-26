@@ -50,11 +50,10 @@ class SignupVM @ViewModelInject constructor(
 	val password: ObservableField<String> = ObservableField()
 	val confirmPassword: ObservableField<String> = ObservableField()
 
+	private val applicationContext = getApplication() as ClientApp
 	private val signupCompleted: MutableLiveData<Boolean> = MutableLiveData()
 
-	fun isSignupCompleted(): LiveData<Boolean> {
-		return signupCompleted
-	}
+	fun isSignupCompleted(): LiveData<Boolean> = signupCompleted
 
 	fun onClick(v: View) {
 		when (v.id) {
@@ -85,10 +84,7 @@ class SignupVM @ViewModelInject constructor(
 		ClientApp.printLog(TAG, "onFailureResponse: ${failureResponse.responseCode}")
 		if (failureResponse.requestCode == RequestCode.SIGNUP) {
 			if (failureResponse.responseCode == ResponseCode.ERROR_SIGN_UP_USER_EXISTS) {
-				ClientApp.showToast(
-					getApplication() as ClientApp,
-					(getApplication() as ClientApp).getString(R.string.err_user_already_exists)
-				)
+				ClientApp.showToast(applicationContext, R.string.err_user_already_exists)
 			}
 		}
 	}

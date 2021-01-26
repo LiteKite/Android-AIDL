@@ -59,7 +59,7 @@ class SignupActivity : BaseActivity() {
 
 	private val signupCompleteObserver = Observer<Boolean> { isCompleted ->
 		if (isCompleted) {
-			ClientApp.showToast(applicationContext, getString(R.string.sign_up_success))
+			ClientApp.showToast(applicationContext, R.string.sign_up_success)
 			onBackPressed()
 		}
 	}

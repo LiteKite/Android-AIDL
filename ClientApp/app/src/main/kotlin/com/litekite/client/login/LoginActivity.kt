@@ -66,7 +66,7 @@ class LoginActivity : BaseActivity() {
 
 	private val loginCompleteObserver = Observer<Boolean> { isCompleted ->
 		if (isCompleted) {
-			ClientApp.showToast(applicationContext, getString(R.string.login_success))
+			ClientApp.showToast(applicationContext, R.string.login_success)
 			startHomeActivity()
 			finish()
 		}

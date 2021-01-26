@@ -19,6 +19,9 @@ package com.litekite.connector.controller
 import android.content.Context
 import com.litekite.connector.base.CallbackProvider
 import com.litekite.connector.entity.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 /**
  * @author Vignesh S
@@ -28,6 +31,8 @@ import com.litekite.connector.entity.*
 @Suppress("UNUSED")
 class BankServiceController(context: Context) : BankServiceConnector.Callback,
 	CallbackProvider<BankServiceConnector.Callback> {
+
+	val coroutineScope = CoroutineScope(Dispatchers.Main)
 
 	private val serviceProvider = BankServiceConnector.Builder(context)
 		.setCallback(this)
@@ -82,27 +87,39 @@ class BankServiceController(context: Context) : BankServiceConnector.Callback,
 	}
 
 	override fun onBankServiceConnected() {
-		callbacks.forEach { it.onBankServiceConnected() }
+		coroutineScope.launch {
+			callbacks.forEach { it.onBankServiceConnected() }
+		}
 	}
 
 	override fun onSignupResponse(authResponse: AuthResponse) {
-		callbacks.forEach { it.onSignupResponse(authResponse) }
+		coroutineScope.launch {
+			callbacks.forEach { it.onSignupResponse(authResponse) }
+		}
 	}
 
 	override fun onLoginResponse(authResponse: AuthResponse) {
-		callbacks.forEach { it.onLoginResponse(authResponse) }
+		coroutineScope.launch {
+			callbacks.forEach { it.onLoginResponse(authResponse) }
+		}
 	}
 
 	override fun onUserDetailsResponse(userDetails: UserDetails) {
-		callbacks.forEach { it.onUserDetailsResponse(userDetails) }
+		coroutineScope.launch {
+			callbacks.forEach { it.onUserDetailsResponse(userDetails) }
+		}
 	}
 
 	override fun onCurrentBalanceChanged(currentBalance: Double) {
-		callbacks.forEach { it.onCurrentBalanceChanged(currentBalance) }
+		coroutineScope.launch {
+			callbacks.forEach { it.onCurrentBalanceChanged(currentBalance) }
+		}
 	}
 
 	override fun onFailureResponse(failureResponse: FailureResponse) {
-		callbacks.forEach { it.onFailureResponse(failureResponse) }
+		coroutineScope.launch {
+			callbacks.forEach { it.onFailureResponse(failureResponse) }
+		}
 	}
 
 }

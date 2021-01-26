@@ -16,6 +16,7 @@
 
 package com.litekite.client.app
 
+import android.annotation.StringRes
 import android.app.Application
 import android.content.Context
 import android.util.Log
@@ -36,10 +37,10 @@ class ClientApp : Application() {
 
 		/**
 		 * @param context An Activity or Application Context.
-		 * @param message A message that to be displayed inside a Toast.
+		 * @param stringRes A string resource that to be displayed inside a Toast.
 		 */
-		fun showToast(context: Context, message: String) {
-			Toast.makeText(context, message, Toast.LENGTH_LONG).show()
+		fun showToast(context: Context, @StringRes stringRes: Int) {
+			Toast.makeText(context, stringRes, Toast.LENGTH_LONG).show()
 		}
 
 		/**
@@ -61,7 +62,7 @@ class ClientApp : Application() {
 
 	override fun onLowMemory() {
 		super.onLowMemory()
-		printLog(TAG, "onTerminate: ")
+		printLog(TAG, "onLowMemory: ")
 	}
 
 }
