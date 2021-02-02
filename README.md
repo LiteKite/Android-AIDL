@@ -23,7 +23,7 @@ Making <b>Inter Process Communication (IPC) via Android Interface Definition Lan
 <p align="center">
     <img src="https://github.com/svignesh93/Android-AIDL/blob/assets/assets/aidl_login.png" alt="AIDL Login Screen" width="30%">
     <img src="https://github.com/svignesh93/Android-AIDL/blob/assets/assets/aidl_sign_up.png" alt="AIDL Sign Up" width="30%" hspace="2%">
-    <img src="https://github.com/svignesh93/Android-AIDL/blob/assets/assets/aidl_home.png" alt="AIDL Home" width="30%" hspace="2%">
+    <img src="https://github.com/svignesh93/Android-AIDL/blob/assets/assets/aidl_home.png" alt="AIDL Home" width="30%">
 </p>
 
 ##
