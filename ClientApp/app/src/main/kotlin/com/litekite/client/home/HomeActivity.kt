@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.litekite.client.home
 
 import android.content.Context
@@ -36,47 +35,45 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class HomeActivity : BaseActivity() {
 
-	companion object {
+    companion object {
 
-		/**
-		 * Launches HomeActivity.
-		 *
-		 * @param context An Activity Context.
-		 */
-		fun start(context: Context) {
-			if (context is AppCompatActivity) {
-				val intent = Intent(context, HomeActivity::class.java)
-				context.startActivity(intent)
-				startActivityAnimation(context)
-			}
-		}
+        /**
+         * Launches HomeActivity.
+         *
+         * @param context An Activity Context.
+         */
+        fun start(context: Context) {
+            if (context is AppCompatActivity) {
+                val intent = Intent(context, HomeActivity::class.java)
+                context.startActivity(intent)
+                startActivityAnimation(context)
+            }
+        }
+    }
 
-	}
+    private lateinit var homeBinding: ActivityHomeBinding
+    private val homeVM: HomeVM by viewModels()
 
-	private lateinit var homeBinding: ActivityHomeBinding
-	private val homeVM: HomeVM by viewModels()
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        homeBinding = DataBindingUtil.setContentView(this, R.layout.activity_home)
+        init()
+    }
 
-	override fun onCreate(savedInstanceState: Bundle?) {
-		super.onCreate(savedInstanceState)
-		homeBinding = DataBindingUtil.setContentView(this, R.layout.activity_home)
-		init()
-	}
+    private fun init() {
+        setToolbar(
+            homeBinding.tbWidget.toolbar,
+            false,
+            getString(R.string.home),
+            homeBinding.tbWidget.tvToolbarTitle
+        )
+        homeBinding.presenter = homeVM
+        lifecycle.addObserver(homeVM)
+    }
 
-	private fun init() {
-		setToolbar(
-			homeBinding.tbWidget.toolbar,
-			false,
-			getString(R.string.home),
-			homeBinding.tbWidget.tvToolbarTitle
-		)
-		homeBinding.presenter = homeVM
-		lifecycle.addObserver(homeVM)
-	}
+    override fun getToolbarMenuResource() = R.menu.home_menu
 
-	override fun getToolbarMenuResource() = R.menu.home_menu
-
-	override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-		return homeVM.onOptionsItemSelected(this, item)
-	}
-
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        return homeVM.onOptionsItemSelected(this, item)
+    }
 }

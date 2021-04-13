@@ -75,27 +75,22 @@ dependencies {
     implementation 'androidx.core:core-ktx:1.3.2'
     implementation 'androidx.appcompat:appcompat:1.2.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
-    implementation 'com.google.android.material:material:1.2.1'
+    implementation 'com.google.android.material:material:1.3.0'
     implementation project(path: ':ConnectorLib')
 
     // Activity & Fragments KTX
-    implementation "androidx.activity:activity-ktx:1.1.0"
-    implementation "androidx.fragment:fragment-ktx:1.2.5"
+    implementation "androidx.activity:activity-ktx:1.2.2"
+    implementation "androidx.fragment:fragment-ktx:1.3.2"
 
     // Lifecycle KTX
     implementation "androidx.lifecycle:lifecycle-runtime-ktx:$lifecycle_version"
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version"
     implementation "androidx.lifecycle:lifecycle-livedata-ktx:$lifecycle_version"
-    implementation "androidx.lifecycle:lifecycle-livedata-core-ktx:$lifecycle_version"
     kapt "androidx.lifecycle:lifecycle-common-java8:$lifecycle_version"
 
     // Hilt
     implementation "com.google.dagger:hilt-android:$hilt_version"
-    kapt "com.google.dagger:hilt-android-compiler:$hilt_version"
-
-    // Hilt for ViewModel
-    implementation 'androidx.hilt:hilt-lifecycle-viewmodel:1.0.0-alpha02'
-    kapt 'androidx.hilt:hilt-compiler:1.0.0-alpha02'
+    kapt "com.google.dagger:hilt-compiler:$hilt_version"
 
     // Test helpers for Core library
     androidTestImplementation 'androidx.test:core-ktx:1.3.0'
@@ -105,14 +100,14 @@ dependencies {
 
     // Hilt - Instrumentation test helpers
     androidTestImplementation "com.google.dagger:hilt-android-testing:$hilt_version"
-    kaptAndroidTest "com.google.dagger:hilt-android-compiler:$hilt_version"
+    kaptAndroidTest "com.google.dagger:hilt-compiler:$hilt_version"
 
     // Hilt - Local unit test helpers
     testImplementation "com.google.dagger:hilt-android-testing:$hilt_version"
-    kaptTest "com.google.dagger:hilt-android-compiler:$hilt_version"
+    kaptTest "com.google.dagger:hilt-compiler:$hilt_version"
 
     // JUnit
-    testImplementation 'junit:junit:4.13.1'
+    testImplementation 'junit:junit:4.13.2'
 
     // AndroidJUnitRunner and JUnit Rules
     androidTestImplementation 'androidx.test:runner:1.3.0'

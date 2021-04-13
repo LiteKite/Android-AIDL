@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.litekite.client.base
 
 import android.content.Context
@@ -36,71 +35,69 @@ import com.litekite.client.R
 @Suppress("REGISTERED")
 open class BaseActivity : AppCompatActivity() {
 
-	companion object {
+    companion object {
 
-		/**
-		 * Starts Activity animation.
-		 *
-		 * @param context An activity context.
-		 */
-		fun startActivityAnimation(context: Context) {
-			if (context is AppCompatActivity) {
-				context.overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
-			}
-		}
+        /**
+         * Starts Activity animation.
+         *
+         * @param context An activity context.
+         */
+        fun startActivityAnimation(context: Context) {
+            if (context is AppCompatActivity) {
+                context.overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
+            }
+        }
+    }
 
-	}
+    /**
+     * Sets Toolbar, Toolbar Title and Back Navigation Button.
+     *
+     * @param toolbar        Toolbar widget.
+     * @param backBtnVisible A boolean value whether to display Toolbar back navigation button or
+     * not.
+     * @param toolbarTitle   The title of a Toolbar.
+     * @param tvToolbarTitle A TextView in which the title of a Toolbar is displayed.
+     */
+    protected fun setToolbar(
+        toolbar: Toolbar,
+        backBtnVisible: Boolean,
+        toolbarTitle: String,
+        tvToolbarTitle: TextView
+    ) {
+        toolbar.title = ""
+        if (backBtnVisible) {
+            toolbar.setNavigationIcon(R.drawable.ic_arrow_back)
+        }
+        toolbar.setContentInsetsAbsolute(0, 0)
+        tvToolbarTitle.text = toolbarTitle
+        setSupportActionBar(toolbar)
+        if (backBtnVisible) {
+            toolbar.setNavigationOnClickListener { onBackPressed() }
+        }
+    }
 
-	/**
-	 * Sets Toolbar, Toolbar Title and Back Navigation Button.
-	 *
-	 * @param toolbar        Toolbar widget.
-	 * @param backBtnVisible A boolean value whether to display Toolbar back navigation button or
-	 * not.
-	 * @param toolbarTitle   The title of a Toolbar.
-	 * @param tvToolbarTitle A TextView in which the title of a Toolbar is displayed.
-	 */
-	protected fun setToolbar(
-		toolbar: Toolbar,
-		backBtnVisible: Boolean,
-		toolbarTitle: String,
-		tvToolbarTitle: TextView
-	) {
-		toolbar.title = ""
-		if (backBtnVisible) {
-			toolbar.setNavigationIcon(R.drawable.ic_arrow_back)
-		}
-		toolbar.setContentInsetsAbsolute(0, 0)
-		tvToolbarTitle.text = toolbarTitle
-		setSupportActionBar(toolbar)
-		if (backBtnVisible) {
-			toolbar.setNavigationOnClickListener { onBackPressed() }
-		}
-	}
+    /**
+     * @param v           A View in which the SnackBar should be displayed at the bottom of the
+     * screen.
+     * @param stringResID A message that to be displayed inside a SnackBar.
+     */
+    fun showSnackBar(v: View, @StringRes stringResID: Int) {
+        Snackbar.make(v, stringResID, Snackbar.LENGTH_LONG).show()
+    }
 
-	/**
-	 * @param v           A View in which the SnackBar should be displayed at the bottom of the
-	 * screen.
-	 * @param stringResID A message that to be displayed inside a SnackBar.
-	 */
-	fun showSnackBar(v: View, @StringRes stringResID: Int) {
-		Snackbar.make(v, stringResID, Snackbar.LENGTH_LONG).show()
-	}
+    override fun onBackPressed() {
+        super.onBackPressed()
+        overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right)
+    }
 
-	override fun onBackPressed() {
-		super.onBackPressed()
-		overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right)
-	}
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        return if (getToolbarMenuResource() == 0) {
+            super.onCreateOptionsMenu(menu)
+        } else {
+            menuInflater.inflate(getToolbarMenuResource(), menu)
+            true
+        }
+    }
 
-	override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-		return if (getToolbarMenuResource() == 0) {
-			super.onCreateOptionsMenu(menu)
-		} else {
-			menuInflater.inflate(getToolbarMenuResource(), menu)
-			true
-		}
-	}
-
-	open fun getToolbarMenuResource(): Int = 0
-
+    open fun getToolbarMenuResource(): Int = 0
 }

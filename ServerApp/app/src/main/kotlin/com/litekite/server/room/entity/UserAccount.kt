@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.litekite.server.room.entity
 
 import android.os.Parcelable
@@ -32,17 +31,17 @@ import kotlinx.parcelize.Parcelize
 @Entity(tableName = "user_account", indices = [Index("user_id")])
 data class UserAccount(
 
-	@PrimaryKey(autoGenerate = true)
-	@ColumnInfo(name = "user_id")
-	val userId: Long = 0,
+    @PrimaryKey(autoGenerate = true)
+    @ColumnInfo(name = "user_id")
+    val userId: Long = 0,
 
-	@ColumnInfo(name = "username")
-	val username: String,
+    @ColumnInfo(name = "username")
+    val username: String,
 
-	@ColumnInfo(name = "password")
-	val password: String,
+    @ColumnInfo(name = "password")
+    val password: String,
 
-	@ColumnInfo(name = "balance")
-	var balance: Double = 0.0
+    @ColumnInfo(name = "balance")
+    var balance: Double = 0.0
 
 ) : Parcelable

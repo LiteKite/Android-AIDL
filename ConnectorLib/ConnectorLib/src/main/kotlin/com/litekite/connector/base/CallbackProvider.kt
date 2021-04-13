@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.litekite.connector.base
 
 /**
@@ -24,14 +23,13 @@ package com.litekite.connector.base
 @Suppress("UNUSED")
 interface CallbackProvider<T> {
 
-	val callbacks: ArrayList<T>
+    val callbacks: ArrayList<T>
 
-	fun addCallback(cb: T) {
-		callbacks.add(cb)
-	}
+    fun addCallback(cb: T) {
+        callbacks.add(cb)
+    }
 
-	fun removeCallback(cb: T) {
-		callbacks.remove(cb)
-	}
-
+    fun removeCallback(cb: T) {
+        callbacks.remove(cb)
+    }
 }

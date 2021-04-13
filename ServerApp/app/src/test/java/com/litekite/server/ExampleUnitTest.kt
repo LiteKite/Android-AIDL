@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.litekite.server
 
 import org.junit.Assert.assertEquals
@@ -29,8 +28,9 @@ import org.junit.Test
  * @since 1.0
  */
 class ExampleUnitTest {
-	@Test
-	fun addition_isCorrect() {
-		assertEquals(4, 2 + 2)
-	}
+
+    @Test
+    fun addition_isCorrect() {
+        assertEquals(4, 2 + 2)
+    }
 }

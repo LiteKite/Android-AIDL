@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.litekite.client.app
 
 import android.annotation.StringRes
@@ -31,38 +30,36 @@ import dagger.hilt.android.HiltAndroidApp
 @HiltAndroidApp
 class ClientApp : Application() {
 
-	companion object {
+    companion object {
 
-		val TAG: String = ClientApp::class.java.simpleName
+        val TAG: String = ClientApp::class.java.simpleName
 
-		/**
-		 * @param context An Activity or Application Context.
-		 * @param stringRes A string resource that to be displayed inside a Toast.
-		 */
-		fun showToast(context: Context, @StringRes stringRes: Int) {
-			Toast.makeText(context, stringRes, Toast.LENGTH_LONG).show()
-		}
+        /**
+         * @param context An Activity or Application Context.
+         * @param stringRes A string resource that to be displayed inside a Toast.
+         */
+        fun showToast(context: Context, @StringRes stringRes: Int) {
+            Toast.makeText(context, stringRes, Toast.LENGTH_LONG).show()
+        }
 
-		/**
-		 * Logs messages for Debugging Purposes.
-		 *
-		 * @param tag     TAG is a class name in which the log come from.
-		 * @param message Type of a Log Message.
-		 */
-		fun printLog(tag: String, message: String) {
-			Log.d(tag, message)
-		}
+        /**
+         * Logs messages for Debugging Purposes.
+         *
+         * @param tag     TAG is a class name in which the log come from.
+         * @param message Type of a Log Message.
+         */
+        fun printLog(tag: String, message: String) {
+            Log.d(tag, message)
+        }
+    }
 
-	}
+    override fun onCreate() {
+        super.onCreate()
+        printLog(TAG, "onCreate: ")
+    }
 
-	override fun onCreate() {
-		super.onCreate()
-		printLog(TAG, "onCreate: ")
-	}
-
-	override fun onLowMemory() {
-		super.onLowMemory()
-		printLog(TAG, "onLowMemory: ")
-	}
-
+    override fun onLowMemory() {
+        super.onLowMemory()
+        printLog(TAG, "onLowMemory: ")
+    }
 }

@@ -13,10 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.litekite.server.room.dao
 
-import androidx.room.*
+import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
+import androidx.room.Query
+import androidx.room.Update
 import com.litekite.server.room.entity.UserAccount
 
 /**
@@ -27,19 +30,18 @@ import com.litekite.server.room.entity.UserAccount
 @Dao
 interface BankDao {
 
-	@Query("select exists(select * from user_account where username = :username)")
-	suspend fun isUserAccountExists(username: String): Boolean
+    @Query("select exists(select * from user_account where username = :username)")
+    suspend fun isUserAccountExists(username: String): Boolean
 
-	@Query("select * from user_account where username = :username AND password = :password")
-	suspend fun getUserAccount(username: String, password: String): UserAccount?
+    @Query("select * from user_account where username = :username AND password = :password")
+    suspend fun getUserAccount(username: String, password: String): UserAccount?
 
-	@Query("select * from user_account where user_id = :userId")
-	suspend fun getUserAccount(userId: Long): UserAccount?
+    @Query("select * from user_account where user_id = :userId")
+    suspend fun getUserAccount(userId: Long): UserAccount?
 
-	@Update(onConflict = OnConflictStrategy.REPLACE)
-	suspend fun updateUserAccount(userAccount: UserAccount) : Int
+    @Update(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun updateUserAccount(userAccount: UserAccount): Int
 
-	@Insert(onConflict = OnConflictStrategy.REPLACE)
-	suspend fun saveUserAccount(userAccount: UserAccount) : Long
-
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun saveUserAccount(userAccount: UserAccount): Long
 }

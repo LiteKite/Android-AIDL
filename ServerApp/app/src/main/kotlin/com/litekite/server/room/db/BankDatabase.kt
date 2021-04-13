@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.litekite.server.room.db
 
 import android.content.Context
@@ -40,87 +39,73 @@ import kotlinx.coroutines.withContext
 @Database(entities = [UserAccount::class], version = 1)
 abstract class BankDatabase : RoomDatabase() {
 
-	companion object {
+    companion object {
 
-		const val ONE_ROW_UPDATED: Int = 1
+        const val ONE_ROW_UPDATED: Int = 1
 
-		private const val DATABASE_NAME = "bank_database"
-		private var bankDatabaseInstance: BankDatabase? = null
+        private const val DATABASE_NAME = "bank_database"
 
-		/**
-		 * Creates Room Database Instance if was not already initiated.
-		 *
-		 * @param context Activity or Application Context.
-		 *
-		 * @return [bankDatabaseInstance]
-		 */
-		private fun getBankDatabase(context: Context): BankDatabase {
-			if (bankDatabaseInstance == null) {
-				bankDatabaseInstance =
-					Room.databaseBuilder(context, BankDatabase::class.java, DATABASE_NAME).build()
-			}
-			return bankDatabaseInstance as BankDatabase
-		}
+        @Volatile
+        private var BANK_DATABASE_INSTANCE: BankDatabase? = null
 
-		suspend fun isUserExists(context: Context, username: String): Boolean {
-			return withContext(Dispatchers.IO) {
-				getBankDatabase(context)
-					.bankDao
-					.isUserAccountExists(username)
-			}
-		}
+        /**
+         * Creates Room Database Instance if was not already initiated.
+         *
+         * @param context Activity or Application Context.
+         *
+         * @return [BANK_DATABASE_INSTANCE]
+         */
+        @Synchronized
+        fun getBankDatabase(context: Context): BankDatabase {
+            if (BANK_DATABASE_INSTANCE == null) {
+                BANK_DATABASE_INSTANCE =
+                    Room.databaseBuilder(context, BankDatabase::class.java, DATABASE_NAME).build()
+            }
+            return BANK_DATABASE_INSTANCE as BankDatabase
+        }
+    }
 
-		suspend fun saveUserAccount(context: Context, userAccount: UserAccount): Long {
-			return withContext(Dispatchers.IO) {
-				getBankDatabase(context)
-					.bankDao
-					.saveUserAccount(userAccount)
-			}
-		}
+    suspend fun isUserExists(username: String): Boolean {
+        return withContext(Dispatchers.IO) {
+            bankDao.isUserAccountExists(username)
+        }
+    }
 
-		@Synchronized
-		suspend fun updateUserAccount(context: Context, userAccount: UserAccount): Int {
-			return withContext(Dispatchers.IO) {
-				getBankDatabase(context)
-					.bankDao
-					.updateUserAccount(userAccount)
-			}
-		}
+    suspend fun saveUserAccount(userAccount: UserAccount): Long {
+        return withContext(Dispatchers.IO) {
+            bankDao.saveUserAccount(userAccount)
+        }
+    }
 
-		suspend fun getUserAccount(
-			context: Context,
-			username: String,
-			password: String
-		): UserAccount? {
-			return withContext(Dispatchers.IO) {
-				getBankDatabase(context)
-					.bankDao
-					.getUserAccount(username, password)
-			}
-		}
+    suspend fun updateUserAccount(userAccount: UserAccount): Int {
+        return withContext(Dispatchers.IO) {
+            bankDao.updateUserAccount(userAccount)
+        }
+    }
 
-		suspend fun getUserAccount(context: Context, userId: Long): UserAccount? {
-			return withContext(Dispatchers.IO) {
-				getBankDatabase(context)
-					.bankDao
-					.getUserAccount(userId)
-			}
-		}
+    suspend fun getUserAccount(username: String, password: String): UserAccount? {
+        return withContext(Dispatchers.IO) {
+            bankDao.getUserAccount(username, password)
+        }
+    }
 
-		/**
-		 * Destroys [bankDatabaseInstance]
-		 */
-		fun destroyAppDatabase() {
-			bankDatabaseInstance = null
-		}
+    suspend fun getUserAccount(userId: Long): UserAccount? {
+        return withContext(Dispatchers.IO) {
+            bankDao.getUserAccount(userId)
+        }
+    }
 
-	}
+    /**
+     * Destroys [BANK_DATABASE_INSTANCE]
+     */
+    fun destroyAppDatabase() {
+        BANK_DATABASE_INSTANCE = null
+    }
 
-	/**
-	 * Gives BankDao Database Operations.
-	 *
-	 * @return BankDao abstract implementation.
-	 */
-	abstract val bankDao: BankDao
-
+    /**
+     * Gives BankDao Database Operations.
+     *
+     * @return BankDao abstract implementation.
+     */
+    abstract val bankDao: BankDao
 }

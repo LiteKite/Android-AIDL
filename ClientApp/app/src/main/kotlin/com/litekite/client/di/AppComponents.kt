@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.litekite.client.di
 
 import android.content.Context
@@ -22,8 +21,8 @@ import com.litekite.connector.controller.BankServiceController
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.components.ApplicationComponent
 import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
 /**
@@ -32,17 +31,16 @@ import javax.inject.Singleton
  * @since 1.0
  */
 @Module
-@InstallIn(ApplicationComponent::class)
+@InstallIn(SingletonComponent::class)
 object AppComponents {
 
-	@Provides
-	@Singleton
-	fun provideBankServiceController(@ApplicationContext context: Context) =
-		BankServiceController(context)
+    @Provides
+    @Singleton
+    fun provideBankServiceController(@ApplicationContext context: Context) =
+        BankServiceController(context)
 
-	@Provides
-	@Singleton
-	fun providePreferenceController(@ApplicationContext context: Context) =
-		PreferenceController(context)
-
+    @Provides
+    @Singleton
+    fun providePreferenceController(@ApplicationContext context: Context) =
+        PreferenceController(context)
 }

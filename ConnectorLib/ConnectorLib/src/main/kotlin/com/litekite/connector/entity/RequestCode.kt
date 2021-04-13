@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.litekite.connector.entity
 
 /**
@@ -25,12 +24,11 @@ package com.litekite.connector.entity
 @Retention(AnnotationRetention.SOURCE)
 annotation class RequestCode {
 
-	companion object {
-		const val LOGIN = 0
-		const val SIGNUP = 1
-		const val USER_DETAILS_REQ = 2
-		const val DEPOSIT = 3
-		const val WITHDRAWAL = 4
-	}
-
+    companion object {
+        const val LOGIN = 0
+        const val SIGNUP = 1
+        const val USER_DETAILS_REQ = 2
+        const val DEPOSIT = 3
+        const val WITHDRAWAL = 4
+    }
 }

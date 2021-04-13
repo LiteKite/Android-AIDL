@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.litekite.client.login
 
 import android.content.Context
@@ -40,58 +39,56 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class LoginActivity : BaseActivity() {
 
-	companion object {
+    companion object {
 
-		val TAG: String = LoginActivity::class.java.simpleName
+        val TAG: String = LoginActivity::class.java.simpleName
 
-		/**
-		 * Launches LoginActivity.
-		 *
-		 * @param context An Activity Context.
-		 */
-		fun start(context: Context) {
-			if (context is AppCompatActivity) {
-				val intent = Intent(context, LoginActivity::class.java)
-				context.startActivity(intent)
-				startActivityAnimation(context)
-			}
-		}
+        /**
+         * Launches LoginActivity.
+         *
+         * @param context An Activity Context.
+         */
+        fun start(context: Context) {
+            if (context is AppCompatActivity) {
+                val intent = Intent(context, LoginActivity::class.java)
+                context.startActivity(intent)
+                startActivityAnimation(context)
+            }
+        }
+    }
 
-	}
+    @Inject
+    lateinit var preferenceController: PreferenceController
+    private lateinit var loginBinding: ActivityLoginBinding
+    private val loginVM: LoginVM by viewModels()
 
-	@Inject
-	lateinit var preferenceController: PreferenceController
-	private lateinit var loginBinding: ActivityLoginBinding
-	private val loginVM: LoginVM by viewModels()
+    private val loginCompleteObserver = Observer<Boolean> { isCompleted ->
+        if (isCompleted) {
+            ClientApp.showToast(applicationContext, R.string.login_success)
+            startHomeActivity()
+            finish()
+        }
+    }
 
-	private val loginCompleteObserver = Observer<Boolean> { isCompleted ->
-		if (isCompleted) {
-			ClientApp.showToast(applicationContext, R.string.login_success)
-			startHomeActivity()
-			finish()
-		}
-	}
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        if (loginVM.isLoginCompletedBefore()) {
+            ClientApp.printLog(TAG, "onCreate: already logged in. Going to Home!")
+            startHomeActivity()
+            finish()
+            return
+        }
+        loginBinding = DataBindingUtil.setContentView(this, R.layout.activity_login)
+        init()
+    }
 
-	override fun onCreate(savedInstanceState: Bundle?) {
-		super.onCreate(savedInstanceState)
-		if (loginVM.isLoginCompletedBefore()) {
-			ClientApp.printLog(TAG, "onCreate: already logged in. Going to Home!")
-			startHomeActivity()
-			finish()
-			return
-		}
-		loginBinding = DataBindingUtil.setContentView(this, R.layout.activity_login)
-		init()
-	}
+    private fun init() {
+        loginBinding.presenter = loginVM
+        lifecycle.addObserver(loginVM)
+        loginVM.isLoginCompleted().observe(this, loginCompleteObserver)
+    }
 
-	private fun init() {
-		loginBinding.presenter = loginVM
-		lifecycle.addObserver(loginVM)
-		loginVM.isLoginCompleted().observe(this, loginCompleteObserver)
-	}
-
-	private fun startHomeActivity() {
-		HomeActivity.start(this)
-	}
-
+    private fun startHomeActivity() {
+        HomeActivity.start(this)
+    }
 }

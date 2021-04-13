@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.litekite.connector.entity
 
 import android.os.Parcelable
@@ -26,7 +25,7 @@ import kotlinx.parcelize.Parcelize
  */
 @Parcelize
 data class AuthResponse(
-	@ResponseCode val responseCode: Int,
-	val userId: Long,
-	val username: String
+    @ResponseCode val responseCode: Int,
+    val userId: Long,
+    val username: String
 ) : Parcelable

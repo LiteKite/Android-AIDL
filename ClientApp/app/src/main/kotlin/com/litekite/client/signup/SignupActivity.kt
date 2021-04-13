@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.litekite.client.signup
 
 import android.content.Context
@@ -37,49 +36,47 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class SignupActivity : BaseActivity() {
 
-	companion object {
+    companion object {
 
-		/**
-		 * Launches SignupActivity.
-		 *
-		 * @param context An Activity Context.
-		 */
-		fun start(context: Context) {
-			if (context is AppCompatActivity) {
-				val intent = Intent(context, SignupActivity::class.java)
-				context.startActivity(intent)
-				startActivityAnimation(context)
-			}
-		}
+        /**
+         * Launches SignupActivity.
+         *
+         * @param context An Activity Context.
+         */
+        fun start(context: Context) {
+            if (context is AppCompatActivity) {
+                val intent = Intent(context, SignupActivity::class.java)
+                context.startActivity(intent)
+                startActivityAnimation(context)
+            }
+        }
+    }
 
-	}
+    private lateinit var signupBinding: ActivitySignupBinding
+    private val signupVM: SignupVM by viewModels()
 
-	private lateinit var signupBinding: ActivitySignupBinding
-	private val signupVM: SignupVM by viewModels()
+    private val signupCompleteObserver = Observer<Boolean> { isCompleted ->
+        if (isCompleted) {
+            ClientApp.showToast(applicationContext, R.string.sign_up_success)
+            onBackPressed()
+        }
+    }
 
-	private val signupCompleteObserver = Observer<Boolean> { isCompleted ->
-		if (isCompleted) {
-			ClientApp.showToast(applicationContext, R.string.sign_up_success)
-			onBackPressed()
-		}
-	}
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        signupBinding = DataBindingUtil.setContentView(this, R.layout.activity_signup)
+        init()
+    }
 
-	override fun onCreate(savedInstanceState: Bundle?) {
-		super.onCreate(savedInstanceState)
-		signupBinding = DataBindingUtil.setContentView(this, R.layout.activity_signup)
-		init()
-	}
-
-	private fun init() {
-		setToolbar(
-			signupBinding.tbWidget.toolbar,
-			true,
-			getString(R.string.sign_up),
-			signupBinding.tbWidget.tvToolbarTitle
-		)
-		signupBinding.presenter = signupVM
-		lifecycle.addObserver(signupVM)
-		signupVM.isSignupCompleted().observe(this, signupCompleteObserver)
-	}
-
+    private fun init() {
+        setToolbar(
+            signupBinding.tbWidget.toolbar,
+            true,
+            getString(R.string.sign_up),
+            signupBinding.tbWidget.tvToolbarTitle
+        )
+        signupBinding.presenter = signupVM
+        lifecycle.addObserver(signupVM)
+        signupVM.isSignupCompleted().observe(this, signupCompleteObserver)
+    }
 }
