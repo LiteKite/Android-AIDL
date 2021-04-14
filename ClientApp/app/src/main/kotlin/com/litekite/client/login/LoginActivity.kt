@@ -27,9 +27,7 @@ import com.litekite.client.app.ClientApp
 import com.litekite.client.base.BaseActivity
 import com.litekite.client.databinding.ActivityLoginBinding
 import com.litekite.client.home.HomeActivity
-import com.litekite.client.preference.PreferenceController
 import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
 
 /**
  * @author Vignesh S
@@ -57,8 +55,6 @@ class LoginActivity : BaseActivity() {
         }
     }
 
-    @Inject
-    lateinit var preferenceController: PreferenceController
     private lateinit var loginBinding: ActivityLoginBinding
     private val loginVM: LoginVM by viewModels()
 
