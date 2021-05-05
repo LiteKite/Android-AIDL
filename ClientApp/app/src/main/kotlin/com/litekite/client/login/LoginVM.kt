@@ -22,8 +22,6 @@ import androidx.databinding.ObservableField
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.OnLifecycleEvent
 import com.litekite.client.R
 import com.litekite.client.app.ClientApp
@@ -37,6 +35,8 @@ import com.litekite.connector.entity.FailureResponse
 import com.litekite.connector.entity.RequestCode
 import com.litekite.connector.entity.ResponseCode
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import javax.inject.Inject
 
 /**
@@ -59,7 +59,8 @@ class LoginVM @Inject constructor(
     val password: ObservableField<String> = ObservableField()
 
     private val applicationContext = getApplication() as ClientApp
-    private val loginCompleted: MutableLiveData<Boolean> = MutableLiveData()
+    private val _loginCompleted: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    val loginCompleted: StateFlow<Boolean> = _loginCompleted
 
     fun isLoginCompletedBefore() =
         preferenceController.getBoolean(PreferenceController.PREFERENCE_LOGIN_COMPLETE_STATE)
@@ -69,8 +70,6 @@ class LoginVM @Inject constructor(
 
     private fun storeLoggedInUserId(userId: Long) =
         preferenceController.store(PreferenceController.PREFERENCE_LOGGED_IN_USER_ID, userId)
-
-    fun isLoginCompleted(): LiveData<Boolean> = loginCompleted
 
     fun onClick(v: View) {
         when (v.id) {
@@ -96,7 +95,7 @@ class LoginVM @Inject constructor(
         if (authResponse.responseCode == ResponseCode.OK) {
             storeLoggedInUserId(authResponse.userId)
             storeLoginCompleted()
-            loginCompleted.value = true
+            _loginCompleted.value = true
         }
     }
 

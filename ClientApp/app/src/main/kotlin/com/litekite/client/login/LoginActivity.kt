@@ -21,13 +21,15 @@ import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
 import com.litekite.client.R
 import com.litekite.client.app.ClientApp
 import com.litekite.client.base.BaseActivity
 import com.litekite.client.databinding.ActivityLoginBinding
 import com.litekite.client.home.HomeActivity
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.collect
 
 /**
  * @author Vignesh S
@@ -55,16 +57,9 @@ class LoginActivity : BaseActivity() {
         }
     }
 
+    private var loginWork: Job? = null
     private lateinit var loginBinding: ActivityLoginBinding
     private val loginVM: LoginVM by viewModels()
-
-    private val loginCompleteObserver = Observer<Boolean> { isCompleted ->
-        if (isCompleted) {
-            ClientApp.showToast(applicationContext, R.string.login_success)
-            startHomeActivity()
-            finish()
-        }
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -81,10 +76,23 @@ class LoginActivity : BaseActivity() {
     private fun init() {
         loginBinding.presenter = loginVM
         lifecycle.addObserver(loginVM)
-        loginVM.isLoginCompleted().observe(this, loginCompleteObserver)
+        loginWork = lifecycleScope.launchWhenCreated {
+            loginVM.loginCompleted.collect { isCompleted ->
+                if (isCompleted) {
+                    ClientApp.showToast(applicationContext, R.string.login_success)
+                    startHomeActivity()
+                    finish()
+                }
+            }
+        }
     }
 
     private fun startHomeActivity() {
         HomeActivity.start(this)
+    }
+
+    override fun onDestroy() {
+        loginWork?.cancel()
+        super.onDestroy()
     }
 }

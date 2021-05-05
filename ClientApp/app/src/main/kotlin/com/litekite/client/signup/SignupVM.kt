@@ -22,8 +22,6 @@ import androidx.databinding.ObservableField
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.OnLifecycleEvent
 import com.litekite.client.R
 import com.litekite.client.app.ClientApp
@@ -35,6 +33,8 @@ import com.litekite.connector.entity.FailureResponse
 import com.litekite.connector.entity.RequestCode
 import com.litekite.connector.entity.ResponseCode
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import javax.inject.Inject
 
 /**
@@ -57,9 +57,8 @@ class SignupVM @Inject constructor(
     val confirmPassword: ObservableField<String> = ObservableField()
 
     private val applicationContext = getApplication() as ClientApp
-    private val signupCompleted: MutableLiveData<Boolean> = MutableLiveData()
-
-    fun isSignupCompleted(): LiveData<Boolean> = signupCompleted
+    private val _signupCompleted: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    val signupCompleted: StateFlow<Boolean> = _signupCompleted
 
     fun onClick(v: View) {
         when (v.id) {
@@ -99,7 +98,7 @@ class SignupVM @Inject constructor(
         super.onSignupResponse(authResponse)
         ClientApp.printLog(TAG, "onSignupResponse:")
         if (authResponse.responseCode == ResponseCode.OK) {
-            signupCompleted.value = true
+            _signupCompleted.value = true
         }
     }
 

@@ -21,12 +21,15 @@ import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
 import com.litekite.client.R
 import com.litekite.client.app.ClientApp
 import com.litekite.client.base.BaseActivity
 import com.litekite.client.databinding.ActivitySignupBinding
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 
 /**
  * @author Vignesh S
@@ -53,14 +56,8 @@ class SignupActivity : BaseActivity() {
     }
 
     private lateinit var signupBinding: ActivitySignupBinding
+    private var signUpWork: Job? = null
     private val signupVM: SignupVM by viewModels()
-
-    private val signupCompleteObserver = Observer<Boolean> { isCompleted ->
-        if (isCompleted) {
-            ClientApp.showToast(applicationContext, R.string.sign_up_success)
-            onBackPressed()
-        }
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -77,6 +74,22 @@ class SignupActivity : BaseActivity() {
         )
         signupBinding.presenter = signupVM
         lifecycle.addObserver(signupVM)
-        signupVM.isSignupCompleted().observe(this, signupCompleteObserver)
+    }
+
+    override fun onStart() {
+        super.onStart()
+        signUpWork = lifecycleScope.launch {
+            signupVM.signupCompleted.collect { isCompleted ->
+                if (isCompleted) {
+                    ClientApp.showToast(applicationContext, R.string.sign_up_success)
+                    onBackPressed()
+                }
+            }
+        }
+    }
+
+    override fun onStop() {
+        signUpWork?.cancel()
+        super.onStop()
     }
 }

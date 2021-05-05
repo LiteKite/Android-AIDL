@@ -15,11 +15,11 @@
  */
 package com.litekite.client.app
 
-import android.annotation.StringRes
 import android.app.Application
 import android.content.Context
 import android.util.Log
 import android.widget.Toast
+import androidx.annotation.StringRes
 import dagger.hilt.android.HiltAndroidApp
 
 /**

@@ -24,6 +24,7 @@ android {
     defaultConfig {
         applicationId "com.litekite.server"
         minSdkVersion 16
+        //noinspection ExpiredTargetSdkVersion
         targetSdkVersion 28
         versionCode 1
         versionName "1.0"
@@ -77,17 +78,17 @@ dependencies {
     implementation project(path: ':ConnectorLib')
 
     // Room
-    implementation 'androidx.room:room-runtime:2.2.6'
-    kapt 'androidx.room:room-compiler:2.2.6'
+    implementation "androidx.room:room-runtime:$room_version"
+    kapt "androidx.room:room-compiler:$room_version"
 
     // Room KTX
-    implementation 'androidx.room:room-ktx:2.2.6'
+    implementation "androidx.room:room-ktx:$room_version"
 
     // Test helpers for Room
-    testImplementation 'androidx.room:room-testing:2.2.6'
+    testImplementation "androidx.room:room-testing:$room_version"
 
     // Test helpers for Room
-    testImplementation 'androidx.room:room-testing:2.2.6'
+    testImplementation "androidx.room:room-testing:$room_version"
 
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'

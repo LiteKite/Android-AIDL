@@ -25,6 +25,7 @@ android {
     defaultConfig {
         applicationId "com.litekite.client"
         minSdkVersion 16
+        //noinspection ExpiredTargetSdkVersion
         targetSdkVersion 28
         versionCode 1
         versionName "1.0"
@@ -80,12 +81,11 @@ dependencies {
 
     // Activity & Fragments KTX
     implementation "androidx.activity:activity-ktx:1.2.2"
-    implementation "androidx.fragment:fragment-ktx:1.3.2"
+    implementation "androidx.fragment:fragment-ktx:1.3.3"
 
     // Lifecycle KTX
     implementation "androidx.lifecycle:lifecycle-runtime-ktx:$lifecycle_version"
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version"
-    implementation "androidx.lifecycle:lifecycle-livedata-ktx:$lifecycle_version"
     kapt "androidx.lifecycle:lifecycle-common-java8:$lifecycle_version"
 
     // Hilt
@@ -94,9 +94,6 @@ dependencies {
 
     // Test helpers for Core library
     androidTestImplementation 'androidx.test:core-ktx:1.3.0'
-
-    // Test helpers for LiveData
-    testImplementation 'androidx.arch.core:core-testing:2.1.0'
 
     // Hilt - Instrumentation test helpers
     androidTestImplementation "com.google.dagger:hilt-android-testing:$hilt_version"

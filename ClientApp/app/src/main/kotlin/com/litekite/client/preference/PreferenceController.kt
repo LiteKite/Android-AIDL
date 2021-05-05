@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 LiteKite Startup. All rights reserved.
+ * Copyright 2020-2021 LiteKite Startup. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -106,7 +106,7 @@ class PreferenceController @Inject constructor(private val context: Context) {
     }
 
     private fun getPreferences(): SharedPreferences {
-        return context.createCredentialProtectedStorageContext().getSharedPreferences(
+        return context.getSharedPreferences(
             PREFERENCES_CLIENT_APP,
             Context.MODE_PRIVATE
         )
