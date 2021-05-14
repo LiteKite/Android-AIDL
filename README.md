@@ -2,6 +2,8 @@
 
 Making <b>Inter Process Communication (IPC) via Android Interface Definition Language (AIDL)</b> that helps to communicate between two or more different apps that are running on different processes.
 
+<b><i>The other ways of communicating with other apps are using android intents, broadcasts and content providers based on the scenarios.</i></b>
+
 ## Getting Started
 
 1) Install Server and Client app apks on the device.
@@ -28,13 +30,15 @@ Making <b>Inter Process Communication (IPC) via Android Interface Definition Lan
 
 ##
 
-#### please note that, due to background restrictions on Android running API level 30 and above, third-party application can no longer start or bind with the service that belongs to another process or app.
+#### <i>please note that, due to background restrictions on Android running API level 30 and above, third-party application can no longer start or bind with the service that belongs to another process or app.</i>
 
-#### You may need to start or bind a service as a foreground service for Android API level 29.
+#### <i>You may need to start or bind a service as a foreground service for Android API level 29.</i>
 
-#### It is recommended to start or bind with the service that are present in the same application.
+#### <i>It is recommended to start or bind with the service that are present in the same application.</i>
 
-#### If you are developing system level android apps for a custom android system, there will be no restrictions applied.
+#### <i>If you are developing system level android apps for a custom android system, there will be no restrictions applied.</i>
+
+#### <i>A Messenger Object can also be used as a Binder instead of AIDL Binder.</i>
 
 ## Libraries Used
 
