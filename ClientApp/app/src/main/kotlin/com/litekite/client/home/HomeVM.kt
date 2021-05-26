@@ -24,6 +24,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
+import androidx.lifecycle.viewModelScope
 import com.litekite.client.R
 import com.litekite.client.app.ClientApp
 import com.litekite.client.base.BaseActivity
@@ -36,6 +37,8 @@ import com.litekite.connector.entity.RequestCode
 import com.litekite.connector.entity.ResponseCode
 import com.litekite.connector.entity.UserDetails
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 /**
@@ -58,7 +61,20 @@ class HomeVM @Inject constructor(
     val amount: ObservableField<String> = ObservableField()
     val welcomeNote: ObservableField<String> = ObservableField()
 
+    private var backAccUserId: Long = 0L
     private val applicationContext = getApplication() as ClientApp
+
+    init {
+        viewModelScope.launch {
+            preferenceController.getLong(PreferenceController.PREFERENCE_LOGGED_IN_USER_ID)
+                .collectLatest {
+                    backAccUserId = it
+                    if (bankServiceController.isServiceConnected()) {
+                        bankServiceController.userDetailsRequest(backAccUserId)
+                    }
+                }
+        }
+    }
 
     fun onClick(v: View) {
         when (v.id) {
@@ -71,7 +87,7 @@ class HomeVM @Inject constructor(
                     return
                 }
                 bankServiceController.depositRequest(
-                    getBankAccUserId(),
+                    backAccUserId,
                     "${amount.get()}".toDouble()
                 )
             }
@@ -84,7 +100,7 @@ class HomeVM @Inject constructor(
                     return
                 }
                 bankServiceController.withdrawRequest(
-                    getBankAccUserId(),
+                    backAccUserId,
                     "${amount.get()}".toDouble()
                 )
             }
@@ -94,9 +110,6 @@ class HomeVM @Inject constructor(
     private fun resetLoginCompleted() =
         preferenceController.store(PreferenceController.PREFERENCE_LOGIN_COMPLETE_STATE, false)
 
-    private fun getBankAccUserId(): Long =
-        preferenceController.getLong(PreferenceController.PREFERENCE_LOGGED_IN_USER_ID)
-
     private fun updateCurrentBalance(currentBalance: Double) =
         balance.set(String.format("%.2f", currentBalance))
 
@@ -104,7 +117,7 @@ class HomeVM @Inject constructor(
 
     override fun onBankServiceConnected() {
         ClientApp.printLog(TAG, "onBankServiceConnected:")
-        bankServiceController.userDetailsRequest(getBankAccUserId())
+        bankServiceController.userDetailsRequest(backAccUserId)
     }
 
     override fun onUserDetailsResponse(userDetails: UserDetails) {
@@ -142,9 +155,6 @@ class HomeVM @Inject constructor(
     @OnLifecycleEvent(Lifecycle.Event.ON_CREATE)
     fun onCreate() {
         bankServiceController.addCallback(this)
-        if (bankServiceController.isServiceConnected()) {
-            bankServiceController.userDetailsRequest(getBankAccUserId())
-        }
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)

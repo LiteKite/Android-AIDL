@@ -23,6 +23,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
+import androidx.lifecycle.viewModelScope
 import com.litekite.client.R
 import com.litekite.client.app.ClientApp
 import com.litekite.client.base.BaseActivity
@@ -37,6 +38,8 @@ import com.litekite.connector.entity.ResponseCode
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 /**
@@ -59,11 +62,17 @@ class LoginVM @Inject constructor(
     val password: ObservableField<String> = ObservableField()
 
     private val applicationContext = getApplication() as ClientApp
-    private val _loginCompleted: MutableStateFlow<Boolean> = MutableStateFlow(false)
-    val loginCompleted: StateFlow<Boolean> = _loginCompleted
+    private val _loginCompleted: MutableStateFlow<Boolean?> = MutableStateFlow(null)
+    val loginCompleted: StateFlow<Boolean?> = _loginCompleted
 
-    fun isLoginCompletedBefore() =
-        preferenceController.getBoolean(PreferenceController.PREFERENCE_LOGIN_COMPLETE_STATE)
+    init {
+        viewModelScope.launch {
+            preferenceController.getBoolean(PreferenceController.PREFERENCE_LOGIN_COMPLETE_STATE)
+                .collectLatest { isLoginCompleted ->
+                    _loginCompleted.value = isLoginCompleted
+                }
+        }
+    }
 
     private fun storeLoginCompleted() =
         preferenceController.store(PreferenceController.PREFERENCE_LOGIN_COMPLETE_STATE, true)

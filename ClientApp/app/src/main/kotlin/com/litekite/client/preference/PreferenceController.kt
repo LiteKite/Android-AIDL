@@ -16,12 +16,27 @@
 package com.litekite.client.preference
 
 import android.content.Context
-import android.content.SharedPreferences
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.booleanPreferencesKey
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.floatPreferencesKey
+import androidx.datastore.preferences.core.intPreferencesKey
+import androidx.datastore.preferences.core.longPreferencesKey
+import androidx.datastore.preferences.core.stringPreferencesKey
+import androidx.datastore.preferences.preferencesDataStore
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 import javax.inject.Singleton
 
 /**
- * A Shared Preference Controller that uses Credential Protected Storage and it can be only
+ * A Preference DataStore Controller that uses Credential Protected Storage and it can be only
  * accessed after credentials for lock-screen being entered and unlocked.
  *
  * These preferences are stored in /data/user[release-version] or in /data/user-de[debug-version]
@@ -35,6 +50,7 @@ import javax.inject.Singleton
 class PreferenceController @Inject constructor(private val context: Context) {
 
     companion object {
+
         const val PREFERENCES_CLIENT_APP = "preferences_client_app"
 
         const val PREFERENCE_LOGIN_COMPLETE_STATE = "preference_login_complete_state"
@@ -42,73 +58,76 @@ class PreferenceController @Inject constructor(private val context: Context) {
         const val PREFERENCE_LOGGED_IN_USER_ID = "preference_logged_in_user_id"
     }
 
-    private val preferences = getPreferences()
-    private val editor = getEditor()
+    private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(
+        PREFERENCES_CLIENT_APP
+    )
 
-    fun getBoolean(key: String): Boolean {
-        return preferences.getBoolean(key, false)
+    private val scope = CoroutineScope(Dispatchers.IO)
+
+    fun getBoolean(key: String): Flow<Boolean> = context.dataStore.data.map { pref ->
+        pref[booleanPreferencesKey(key)] ?: false
+    }.flowOn(
+        Dispatchers.IO
+    ).catch {
+        it.printStackTrace()
     }
 
-    fun getInt(key: String): Int {
-        return preferences.getInt(key, 0)
+    fun getInt(key: String): Flow<Int> = context.dataStore.data.map { pref ->
+        pref[intPreferencesKey(key)] ?: 0
+    }.flowOn(
+        Dispatchers.IO
+    ).catch {
+        it.printStackTrace()
     }
 
-    fun getLong(key: String): Long {
-        return preferences.getLong(key, 0)
+    fun getLong(key: String): Flow<Long> = context.dataStore.data.map { pref ->
+        pref[longPreferencesKey(key)] ?: 0L
+    }.flowOn(
+        Dispatchers.IO
+    ).catch {
+        it.printStackTrace()
     }
 
-    fun getFloat(key: String): Float {
-        return preferences.getFloat(key, 0F)
+    fun getFloat(key: String): Flow<Float> = context.dataStore.data.map { pref ->
+        pref[floatPreferencesKey(key)] ?: 0F
+    }.flowOn(
+        Dispatchers.IO
+    ).catch {
+        it.printStackTrace()
     }
 
-    fun getDouble(key: String): Double {
-        return java.lang.Double.longBitsToDouble(
-            preferences.getLong(key, 0)
-        )
+    fun getDouble(key: String): Flow<Double> = context.dataStore.data.map { pref ->
+        java.lang.Double.longBitsToDouble(pref[longPreferencesKey(key)] ?: 0)
+    }.flowOn(
+        Dispatchers.IO
+    ).catch {
+        it.printStackTrace()
     }
 
-    fun getString(key: String): String {
-        return preferences.getString(key, "") ?: ""
+    fun getString(key: String): Flow<String> = context.dataStore.data.map { pref ->
+        pref[stringPreferencesKey(key)] ?: ""
+    }.flowOn(
+        Dispatchers.IO
+    ).catch {
+        it.printStackTrace()
     }
 
-    fun store(key: String, value: Boolean) {
-        editor.putBoolean(key, value).apply()
-    }
+    fun store(key: String, value: Boolean) = set(booleanPreferencesKey(key), value)
 
-    fun store(key: String, value: Int) {
-        editor.putInt(key, value).apply()
-    }
+    fun store(key: String, value: Int) = set(intPreferencesKey(key), value)
 
-    fun store(key: String, value: Long) {
-        editor.putLong(
-            key,
-            value
-        ).apply()
-    }
+    fun store(key: String, value: Long) = set(longPreferencesKey(key), value)
 
-    fun store(key: String, value: Float) {
-        editor.putFloat(key, value).apply()
-    }
+    fun store(key: String, value: Float) = set(floatPreferencesKey(key), value)
 
-    fun store(key: String, value: Double) {
-        editor.putLong(
-            key,
-            java.lang.Double.doubleToRawLongBits((value))
-        ).apply()
-    }
+    fun store(key: String, value: Double) = set(
+        longPreferencesKey(key),
+        java.lang.Double.doubleToRawLongBits((value))
+    )
 
-    fun store(key: String, value: String) {
-        editor.putString(key, value).apply()
-    }
+    fun store(key: String, value: String) = set(stringPreferencesKey(key), value)
 
-    private fun getEditor(): SharedPreferences.Editor {
-        return preferences.edit()
-    }
-
-    private fun getPreferences(): SharedPreferences {
-        return context.getSharedPreferences(
-            PREFERENCES_CLIENT_APP,
-            Context.MODE_PRIVATE
-        )
+    private fun <T> set(prefKey: Preferences.Key<T>, value: T) = scope.launch {
+        context.dataStore.edit { pref -> pref[prefKey] = value }
     }
 }

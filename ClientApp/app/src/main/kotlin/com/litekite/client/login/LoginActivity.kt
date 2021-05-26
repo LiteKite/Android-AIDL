@@ -29,7 +29,8 @@ import com.litekite.client.databinding.ActivityLoginBinding
 import com.litekite.client.home.HomeActivity
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 /**
  * @author Vignesh S
@@ -63,28 +64,36 @@ class LoginActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        if (loginVM.isLoginCompletedBefore()) {
-            ClientApp.printLog(TAG, "onCreate: already logged in. Going to Home!")
-            startHomeActivity()
-            finish()
-            return
+        checkLoginState { isCompleted ->
+            if (isCompleted == null) {
+                return@checkLoginState
+            }
+            if (isCompleted) {
+                ClientApp.printLog(TAG, "checkLoginState: logged in. Going to Home!")
+                ClientApp.showToast(applicationContext, R.string.login_success)
+                startHomeActivity()
+                finish()
+            } else {
+                init()
+            }
         }
-        loginBinding = DataBindingUtil.setContentView(this, R.layout.activity_login)
-        init()
+    }
+
+    private fun checkLoginState(block: (Boolean?) -> (Unit)) {
+        loginWork = lifecycleScope.launch {
+            loginVM.loginCompleted.collectLatest {
+                block.invoke(it)
+            }
+        }
     }
 
     private fun init() {
+        loginBinding = DataBindingUtil.setContentView(
+            this@LoginActivity,
+            R.layout.activity_login
+        )
         loginBinding.presenter = loginVM
         lifecycle.addObserver(loginVM)
-        loginWork = lifecycleScope.launchWhenCreated {
-            loginVM.loginCompleted.collect { isCompleted ->
-                if (isCompleted) {
-                    ClientApp.showToast(applicationContext, R.string.login_success)
-                    startHomeActivity()
-                    finish()
-                }
-            }
-        }
     }
 
     private fun startHomeActivity() {
